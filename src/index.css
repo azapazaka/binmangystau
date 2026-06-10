@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+@theme {
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+  --color-brand: #16a34a;
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-600: #16a34a;
+  --color-brand-700: #15803d;
+  --color-cat-road: #ef4444;
+  --color-cat-light: #f59e0b;
+  --color-cat-trash: #22c55e;
+  --color-cat-traffic: #3b82f6;
+  --color-cat-other: #94a3b8;
+  --radius-card: 12px;
+  --shadow-card: 0 1px 3px 0 rgba(0,0,0,.08), 0 1px 2px -1px rgba(0,0,0,.08);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-family-sans);
+  background: #f8fafc;
+  color: #0f172a;
+  margin: 0;
+}
+
+.card {
+  background: #fff;
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  border: 1px solid #e2e8f0;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-link:hover { background: #f1f5f9; color: #0f172a; }
+.sidebar-link.active { background: #f0fdf4; color: #16a34a; }
+.sidebar-link.active svg { color: #16a34a; }
+
+.btn-primary {
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: #15803d; }
+
+.btn-ghost {
+  background: transparent;
+  color: #64748b;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-ghost:hover { background: #f8fafc; }
