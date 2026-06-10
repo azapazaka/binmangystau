@@ -1,252 +1,550 @@
-// src/pages/citizen/ReportWizard.tsx
-import { useState, useRef } from 'react'
-import { useNavigate } from 'react-router'
-import { useAuth } from '@/contexts/AuthContext'
-import { createReport } from '@/lib/api'
-import { env } from '@/lib/env'
-import { CATEGORY_META } from '@/lib/constants'
-import { Upload, MapPin, CheckCircle, ChevronRight, ChevronLeft } from 'lucide-react'
-import { CategoryBadge } from '@/components/ui/CategoryBadge'
-import type { ReportCategory } from '@/types'
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useNavigate } from "react-router";
+import {
+  Camera,
+  Check,
+  CheckCircle2,
+  ChevronRight,
+  ImagePlus,
+  MapPin,
+  Shield,
+  Sparkles,
+  Upload,
+} from "lucide-react";
 
-type Step = 1 | 2 | 3 | 4 | 5
-const STEP_LABELS = ['Фото', 'Место', 'Категория', 'Детали', 'Отправка']
-const CATEGORIES = Object.keys(CATEGORY_META) as ReportCategory[]
+import { CitizenShell } from "@/components/citizen-v2/CitizenShell";
+import { CitizenStatusBadge } from "@/components/citizen-v2/CitizenStatusBadge";
+import { CategoryBadge } from "@/components/ui/CategoryBadge";
+import { useAuth } from "@/contexts/AuthContext";
+import { CATEGORY_META } from "@/lib/constants";
+import { createReport } from "@/lib/api";
+import { env } from "@/lib/env";
+import type { ReportCategory } from "@/types";
+
+type StepState = {
+  label: string;
+  done: boolean;
+};
+
+const CATEGORY_OPTIONS = Object.keys(CATEGORY_META) as ReportCategory[];
+
+function buildStepState(input: {
+  photo: File | null;
+  address: string;
+  category: ReportCategory;
+  description: string;
+}): StepState[] {
+  return [
+    { label: "Add Photo", done: Boolean(input.photo) },
+    { label: "Confirm Location", done: input.address.trim().length > 0 },
+    { label: "Category", done: Boolean(input.category) },
+    { label: "Add Details", done: input.description.trim().length > 0 },
+    {
+      label: "Submit",
+      done:
+        Boolean(input.photo) &&
+        input.address.trim().length > 0 &&
+        Boolean(input.category),
+    },
+  ];
+}
 
 export default function ReportWizard() {
-  const { user } = useAuth()
-  const nav = useNavigate()
-  const [step, setStep] = useState<Step>(1)
-  const [photo, setPhoto] = useState<File | null>(null)
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [lat, setLat] = useState(env.defaultLat)
-  const [lng, setLng] = useState(env.defaultLng)
-  const [address, setAddress] = useState('')
-  const [category, setCategory] = useState<ReportCategory>('road')
-  const [aiConfidence] = useState(84) // mock
-  const [description, setDescription] = useState('')
-  const [submitting, setSubmitting] = useState(false)
-  const [done, setDone] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const pickPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0]
-    if (!f) return
-    setPhoto(f)
-    setPhotoPreview(URL.createObjectURL(f))
+  const [photo, setPhoto] = useState<File | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [lat, setLat] = useState(env.defaultLat);
+  const [lng, setLng] = useState(env.defaultLng);
+  const [address, setAddress] = useState("");
+  const [district, setDistrict] = useState("Aktau");
+  const [category, setCategory] = useState<ReportCategory>("road");
+  const [description, setDescription] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    return () => {
+      if (photoPreview) {
+        URL.revokeObjectURL(photoPreview);
+      }
+    };
+  }, [photoPreview]);
+
+  const steps = useMemo(
+    () => buildStepState({ photo, address, category, description }),
+    [photo, address, category, description],
+  );
+  const completedSteps = steps.filter((step) => step.done).length;
+  const submitReady = Boolean(photo) && Boolean(user) && address.trim().length > 0;
+
+  const categoryMeta = CATEGORY_META[category];
+
+  function onPickPhoto(event: ChangeEvent<HTMLInputElement>) {
+    const nextPhoto = event.target.files?.[0];
+    if (!nextPhoto) return;
+
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
+
+    setSubmitError(null);
+    setPhoto(nextPhoto);
+    setPhotoPreview(URL.createObjectURL(nextPhoto));
   }
 
-  const geolocate = () => {
-    navigator.geolocation.getCurrentPosition(pos => {
-      setLat(pos.coords.latitude)
-      setLng(pos.coords.longitude)
-      setAddress(`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`)
-    })
+  function onUseCurrentLocation() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nextLat = position.coords.latitude;
+        const nextLng = position.coords.longitude;
+        setLat(nextLat);
+        setLng(nextLng);
+        setAddress(`${nextLat.toFixed(5)}, ${nextLng.toFixed(5)}`);
+        setDistrict("Current location");
+        setSubmitError(null);
+      },
+      () => {
+        setSubmitError("Location access was denied. Enter the address manually.");
+      },
+    );
   }
 
-  const submit = async () => {
-    if (!photo || !user) return
-    setSubmitting(true)
-    setSubmitError(null)
+  async function onSubmit() {
+    if (!photo || !user || !address.trim()) return;
+
+    setSubmitting(true);
+    setSubmitError(null);
+
     try {
       await createReport({
-        photo, userCategory: category,
-        description, lat, lng, address,
+        photo,
+        userCategory: category,
+        description: description.trim(),
+        lat,
+        lng,
+        address: address.trim(),
         submittedBy: user.id,
-      })
-      setDone(true)
-    } catch (e) {
-      setSubmitError(e instanceof Error ? e.message : 'Ошибка при отправке')
+      });
+      setDone(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "Failed to submit the report.",
+      );
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
-  if (done) return (
-    <div className="flex flex-col items-center justify-center h-full gap-4 text-center p-8">
-      <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
-        <CheckCircle size={32} className="text-green-600" />
-      </div>
-      <h2 className="text-xl font-bold text-slate-900">Обращение отправлено!</h2>
-      <p className="text-sm text-slate-500">Ваш запрос принят и будет обработан городской службой.</p>
-      <button onClick={() => nav('/citizen/my-reports')} className="btn-primary">
-        Мои обращения
-      </button>
-    </div>
-  )
+  if (done) {
+    return (
+      <CitizenShell
+        title="Report submitted"
+        subtitle="Your report was sent to CityPulse and is now available in the live citizen queue."
+      >
+        <div className="mx-auto mt-8 max-w-3xl">
+          <article className="citizen-v2-panel flex flex-col items-center px-8 py-14 text-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
+              <CheckCircle2 size={38} />
+            </div>
+            <h2 className="mt-6 text-3xl font-bold text-slate-950">Your issue is now live.</h2>
+            <p className="mt-3 max-w-xl text-base leading-7 text-slate-600">
+              The report was uploaded successfully and will now appear in your citizen report history.
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => navigate("/citizen/my-reports")}
+                className="rounded-2xl bg-teal-700 px-6 py-3 text-sm font-semibold text-white"
+              >
+                Open My Reports
+              </button>
+              <button
+                type="button"
+                onClick={() => navigate("/citizen")}
+                className="rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700"
+              >
+                Back to Overview
+              </button>
+            </div>
+          </article>
+        </div>
+      </CitizenShell>
+    );
+  }
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      {/* Progress bar */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          {STEP_LABELS.map((label, i) => {
-            const n = (i + 1) as Step
-            return (
-              <div key={n} className="flex flex-col items-center gap-1 flex-1">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                  n < step ? 'bg-green-600 text-white' :
-                  n === step ? 'bg-green-600 text-white ring-4 ring-green-100' :
-                  'bg-slate-100 text-slate-400'
-                }`}>
-                  {n < step ? '✓' : n}
-                </div>
-                <span className={`text-[10px] font-medium ${n === step ? 'text-green-600' : 'text-slate-400'}`}>
-                  {label}
-                </span>
+    <CitizenShell
+      title="Create New Report"
+      subtitle="Help improve Aktau by reporting issues in your city."
+    >
+      <section className="mt-6 border-t border-slate-200/80 pt-5">
+        <div className="grid gap-3 lg:grid-cols-5">
+          {steps.map((step, index) => (
+            <div key={step.label} className="flex items-center gap-3">
+              <div
+                className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-semibold ${
+                  step.done
+                    ? "border-teal-700 bg-teal-700 text-white"
+                    : "border-slate-200 bg-white text-slate-500"
+                }`}
+              >
+                {step.done ? <Check size={16} /> : index + 1}
               </div>
-            )
-          })}
+              <span className="text-sm font-medium text-slate-700">{step.label}</span>
+            </div>
+          ))}
         </div>
-        <div className="relative h-1 bg-slate-100 rounded-full">
-          <div className="absolute h-1 bg-green-600 rounded-full transition-all"
-            style={{ width: `${((step - 1) / 4) * 100}%` }} />
-        </div>
-      </div>
+      </section>
 
-      <div className="card p-6">
-        {/* Step 1: Photo */}
-        {step === 1 && (
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Добавьте фото</h3>
-            <p className="text-sm text-slate-500 mb-5">Сделайте или загрузите фото проблемы</p>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={pickPhoto} />
-            {photoPreview ? (
-              <div className="relative">
-                <img src={photoPreview} alt="" className="w-full h-64 object-cover rounded-xl" />
-                <button onClick={() => { setPhoto(null); setPhotoPreview(null) }}
-                  className="absolute top-2 right-2 bg-white rounded-full p-1 shadow text-slate-500 hover:text-red-500">
-                  ✕
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => fileRef.current?.click()}
-                className="w-full h-48 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-3 hover:border-green-400 hover:bg-green-50 transition-colors">
-                <Upload size={28} className="text-slate-300" />
-                <span className="text-sm text-slate-400">Нажмите для загрузки фото</span>
-              </button>
-            )}
-          </div>
-        )}
-
-        {/* Step 2: Location */}
-        {step === 2 && (
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Подтвердите место</h3>
-            <p className="text-sm text-slate-500 mb-5">Укажите, где находится проблема</p>
-            <div className="h-48 rounded-xl bg-slate-100 flex items-center justify-center mb-4">
-              <div className="text-slate-400 text-sm text-center p-4">
-                <MapPin size={28} className="mx-auto mb-2 text-green-400" />
-                <p>Карта: {lat.toFixed(4)}, {lng.toFixed(4)}</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <input value={address} onChange={e => setAddress(e.target.value)}
-                placeholder="Введите адрес вручную"
-                className="flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-green-600/30 focus:border-green-600" />
-              <button onClick={geolocate} className="btn-ghost shrink-0 flex items-center gap-1.5 px-3">
-                <MapPin size={15} />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Step 3: AI Category */}
-        {step === 3 && (
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Категория</h3>
-            <p className="text-sm text-slate-500 mb-4">AI определил категорию. Вы можете изменить.</p>
-            <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-5">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-green-700">AI определил:</p>
-                <CategoryBadge category={category} />
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-2 bg-green-100 rounded-full">
-                  <div className="h-2 bg-green-600 rounded-full" style={{ width: `${aiConfidence}%` }} />
+      <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.35fr)_320px]">
+        <div className="space-y-5">
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.18fr)]">
+            <article className="citizen-v2-panel">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-2xl font-semibold text-slate-950">Add Photo of the Issue</h2>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">
+                    Clear photos help city services understand and resolve issues faster.
+                  </p>
                 </div>
-                <span className="text-xs font-bold text-green-700">{aiConfidence}%</span>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={onPickPhoto}
+                />
               </div>
-              <p className="text-[11px] text-green-600 mt-1">Уверенность AI</p>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {CATEGORIES.map(c => {
-                const m = CATEGORY_META[c]
-                return (
-                  <button key={c} onClick={() => setCategory(c)}
-                    className={`p-3 rounded-xl border-2 text-left transition-all ${
-                      category === c
-                        ? 'border-green-600 bg-green-50'
-                        : 'border-slate-200 hover:border-slate-300'
-                    }`}>
-                    <div className="w-3 h-3 rounded-full mb-2" style={{ background: m.color }} />
-                    <p className="text-xs font-semibold text-slate-900">{m.label}</p>
+
+              <div className="mt-5">
+                {photoPreview ? (
+                  <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-slate-50">
+                    <img
+                      src={photoPreview}
+                      alt="Selected issue"
+                      className="h-[340px] w-full object-cover"
+                    />
+                    <div className="flex justify-center p-5">
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="inline-flex items-center gap-2 rounded-2xl bg-slate-800 px-5 py-3 text-sm font-semibold text-white"
+                      >
+                        <Camera size={16} />
+                        Change Photo
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex h-[396px] w-full flex-col items-center justify-center rounded-[24px] border border-dashed border-slate-300 bg-slate-50 px-6 text-center transition hover:border-teal-400 hover:bg-teal-50/40"
+                  >
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-teal-700 shadow-sm">
+                      <ImagePlus size={28} />
+                    </div>
+                    <p className="mt-5 text-lg font-semibold text-slate-900">Upload a photo</p>
+                    <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
+                      Add one photo that clearly shows the issue. The report will use this image as the live reference.
+                    </p>
+                    <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700">
+                      <Upload size={16} />
+                      Choose image
+                    </span>
                   </button>
-                )
-              })}
+                )}
+              </div>
+
+              <div className="mt-5 flex items-start gap-3 rounded-[20px] bg-emerald-50 px-4 py-4 text-emerald-800">
+                <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold">
+                    {photo ? "Photo added successfully" : "Photo required"}
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-emerald-700/90">
+                    {photo
+                      ? "Your upload is ready for submission."
+                      : "Add a photo before submitting the report."}
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <div className="space-y-5">
+              <article className="citizen-v2-panel">
+                <h2 className="text-2xl font-semibold text-slate-950">Confirm Location</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Confirm where the issue is located. You can use your current location or enter the address manually.
+                </p>
+
+                <div className="mt-5 overflow-hidden rounded-[24px] border border-slate-200 bg-slate-50">
+                  <div className="flex h-[170px] items-center justify-center bg-[radial-gradient(circle_at_top,rgba(20,184,166,0.12),transparent_42%),linear-gradient(135deg,#eef6f4_0%,#f8fafc_45%,#edf4fb_100%)]">
+                    <div className="rounded-full bg-white p-4 text-teal-700 shadow-sm">
+                      <MapPin size={24} />
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-start justify-between gap-3 px-4 py-4">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-1 rounded-full bg-blue-50 p-2 text-blue-600">
+                        <MapPin size={16} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {address || "No address selected yet"}
+                        </p>
+                        <p className="mt-1 text-sm text-slate-500">{district}</p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={onUseCurrentLocation}
+                      className="text-sm font-semibold text-teal-700"
+                    >
+                      Use current location
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-3">
+                  <label className="grid gap-2">
+                    <span className="text-sm font-medium text-slate-700">Address</span>
+                    <input
+                      value={address}
+                      onChange={(event) => {
+                        setAddress(event.target.value);
+                        setDistrict("Aktau");
+                        setSubmitError(null);
+                      }}
+                      placeholder="Abay Ave. 52, Aktau"
+                      className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-teal-500"
+                    />
+                  </label>
+
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <label className="grid gap-2">
+                      <span className="text-sm font-medium text-slate-700">Latitude</span>
+                      <input
+                        value={lat}
+                        onChange={(event) => setLat(Number(event.target.value))}
+                        type="number"
+                        step="0.00001"
+                        className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-teal-500"
+                      />
+                    </label>
+                    <label className="grid gap-2">
+                      <span className="text-sm font-medium text-slate-700">Longitude</span>
+                      <input
+                        value={lng}
+                        onChange={(event) => setLng(Number(event.target.value))}
+                        type="number"
+                        step="0.00001"
+                        className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-teal-500"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </article>
+
+              <article className="citizen-v2-panel">
+                <h2 className="text-2xl font-semibold text-slate-950">Issue Category</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-500">
+                  Choose the category that best describes the issue you are reporting.
+                </p>
+
+                <div className="mt-5 rounded-[24px] bg-emerald-50/70 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="mt-1 h-11 w-11 rounded-2xl"
+                        style={{ backgroundColor: `${categoryMeta.color}18` }}
+                      >
+                        <div
+                          className="m-2 h-7 w-7 rounded-xl"
+                          style={{ backgroundColor: categoryMeta.color }}
+                        />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900">
+                          {categoryMeta.label}
+                        </p>
+                        <p className="mt-1 text-sm text-slate-500">
+                          This label will be stored with the report and used for clustering.
+                        </p>
+                      </div>
+                    </div>
+                    <CitizenStatusBadge label="Live category" tone="success" />
+                  </div>
+                </div>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {CATEGORY_OPTIONS.map((option) => {
+                    const meta = CATEGORY_META[option];
+                    const active = option === category;
+
+                    return (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => setCategory(option)}
+                        className={`rounded-[22px] border px-4 py-4 text-left transition ${
+                          active
+                            ? "border-teal-600 bg-teal-50 shadow-sm"
+                            : "border-slate-200 bg-white hover:border-slate-300"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <span
+                              className="h-3 w-3 rounded-full"
+                              style={{ backgroundColor: meta.color }}
+                            />
+                            <span className="text-sm font-semibold text-slate-900">
+                              {meta.label}
+                            </span>
+                          </div>
+                          {active ? <Check size={16} className="text-teal-700" /> : null}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </article>
+
+              <article className="citizen-v2-panel">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-2xl font-semibold text-slate-950">Add Details</h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-500">
+                      Add context that would help city teams respond faster.
+                    </p>
+                  </div>
+                  <span className="text-sm font-medium text-slate-400">
+                    {description.length}/280
+                  </span>
+                </div>
+                <textarea
+                  value={description}
+                  onChange={(event) => setDescription(event.target.value.slice(0, 280))}
+                  rows={4}
+                  placeholder="Example: Street light has been off for three nights and the area is very dark after sunset."
+                  className="mt-5 w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-500"
+                />
+              </article>
             </div>
           </div>
-        )}
 
-        {/* Step 4: Details */}
-        {step === 4 && (
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Детали (необязательно)</h3>
-            <p className="text-sm text-slate-500 mb-5">Опишите проблему подробнее</p>
-            <textarea value={description} onChange={e => setDescription(e.target.value)}
-              rows={5} placeholder="Опишите проблему…"
-              className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-green-600/30 focus:border-green-600 resize-none" />
-          </div>
-        )}
+          <section className="grid gap-4 md:grid-cols-3">
+            <article className="citizen-v2-panel">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-emerald-50 p-3 text-emerald-700">
+                  <Shield size={20} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Private & Secure</p>
+                  <p className="mt-1 text-sm text-slate-500">Your report information is protected.</p>
+                </div>
+              </div>
+            </article>
+            <article className="citizen-v2-panel">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-sky-50 p-3 text-sky-700">
+                  <CheckCircle2 size={20} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Verified & Transparent</p>
+                  <p className="mt-1 text-sm text-slate-500">Reports are reviewed and shared live.</p>
+                </div>
+              </div>
+            </article>
+            <article className="citizen-v2-panel">
+              <div className="flex items-center gap-3">
+                <div className="rounded-2xl bg-amber-50 p-3 text-amber-700">
+                  <Sparkles size={20} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-900">Track in Real Time</p>
+                  <p className="mt-1 text-sm text-slate-500">Follow your report from submission to resolution.</p>
+                </div>
+              </div>
+            </article>
+          </section>
+        </div>
 
-        {/* Step 5: Review */}
-        {step === 5 && (
-          <div>
-            <h3 className="text-lg font-bold text-slate-900 mb-1">Проверьте и отправьте</h3>
-            <p className="text-sm text-slate-500 mb-5">Убедитесь, что всё верно</p>
-            <div className="flex gap-4">
-              {photoPreview && (
-                <img src={photoPreview} alt="" className="w-24 h-24 object-cover rounded-xl shrink-0" />
+        <aside className="space-y-5">
+          <article className="citizen-v2-panel sticky top-6">
+            <h2 className="text-2xl font-semibold text-slate-950">Review Your Report</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              Review the details before submitting the live report.
+            </p>
+
+            <div className="mt-5 overflow-hidden rounded-[24px] border border-slate-200 bg-slate-50">
+              {photoPreview ? (
+                <img
+                  src={photoPreview}
+                  alt="Issue preview"
+                  className="h-48 w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-48 items-center justify-center text-sm font-medium text-slate-400">
+                  Add a photo to preview the report
+                </div>
               )}
-              <div className="flex flex-col gap-1.5 text-sm">
-                <div><span className="text-slate-400">Место:</span> <span className="font-medium">{address || `${lat.toFixed(4)}, ${lng.toFixed(4)}`}</span></div>
-                <div className="flex items-center gap-2"><span className="text-slate-400">Категория:</span> <CategoryBadge category={category} /></div>
-                {description && <div><span className="text-slate-400">Описание:</span> <span>{description}</span></div>}
+            </div>
+
+            <div className="mt-5 space-y-5">
+              <div className="border-b border-slate-200 pb-4">
+                <p className="text-sm font-semibold text-slate-900">Location</p>
+                <p className="mt-2 text-sm text-slate-700">
+                  {address || "Address not provided"}
+                </p>
+                <p className="mt-1 text-sm text-slate-500">{district}</p>
+              </div>
+
+              <div className="border-b border-slate-200 pb-4">
+                <p className="text-sm font-semibold text-slate-900">Category</p>
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <CategoryBadge category={category} />
+                  <span className="text-sm font-medium text-slate-500">
+                    {completedSteps}/5 complete
+                  </span>
+                </div>
+              </div>
+
+              <div className="border-b border-slate-200 pb-4">
+                <p className="text-sm font-semibold text-slate-900">Details</p>
+                <p className="mt-2 text-sm leading-6 text-slate-600">
+                  {description.trim() || "No extra details added yet."}
+                </p>
               </div>
             </div>
-            {submitError && (
-              <p className="mt-4 text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{submitError}</p>
-            )}
-            <div className="mt-5 p-4 bg-green-50 border border-green-200 rounded-xl">
-              <p className="text-xs text-green-700 font-medium">
-                ✓ Данные будут переданы в городскую службу и обработаны AI-системой
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
 
-      {/* Navigation */}
-      <div className="flex justify-between mt-5">
-        <button onClick={() => setStep(s => (s > 1 ? s - 1 : s) as Step)}
-          disabled={step === 1}
-          className="btn-ghost flex items-center gap-2 disabled:opacity-40">
-          <ChevronLeft size={16} /> Назад
-        </button>
-        {step < 5 ? (
-          <button
-            onClick={() => setStep(s => (s + 1) as Step)}
-            disabled={step === 1 && !photo}
-            className="btn-primary flex items-center gap-2 disabled:opacity-40">
-            Далее <ChevronRight size={16} />
-          </button>
-        ) : (
-          <button onClick={submit} disabled={submitting || !photo} className="btn-primary disabled:opacity-40">
-            {submitting ? 'Отправка…' : 'Отправить обращение'}
-          </button>
-        )}
+            {submitError ? (
+              <div className="mt-5 rounded-[20px] bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                {submitError}
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={onSubmit}
+              disabled={!submitReady || submitting}
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-700 px-5 py-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {submitting ? "Submitting report..." : "Submit Report"}
+              <ChevronRight size={16} />
+            </button>
+
+            <p className="mt-4 text-center text-sm text-slate-500">
+              Your report is private and secure.
+            </p>
+          </article>
+        </aside>
       </div>
-    </div>
-  )
+    </CitizenShell>
+  );
 }

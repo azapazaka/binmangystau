@@ -1,67 +1,142 @@
-// src/components/maps/CityMap.tsx
-import { useEffect, useRef } from 'react'
-import mapboxgl from 'mapbox-gl'
-import { env } from '@/lib/env'
-import { CATEGORY_META } from '@/lib/constants'
-import type { ClusterRecord } from '@/types'
+import { useEffect, useRef, useState } from "react";
 
-type Props = {
-  clusters: ClusterRecord[]
-  selectedId?: string | null
-  onSelect?: (id: string) => void
-  height?: string
-}
+import { CATEGORY_META } from "@/lib/constants";
+import { env } from "@/lib/env";
+import type { ClusterRecord } from "@/types";
 
-export function CityMap({ clusters, selectedId, onSelect, height = '100%' }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const mapRef = useRef<mapboxgl.Map | null>(null)
-  const markersRef = useRef<mapboxgl.Marker[]>([])
+type LeafletModule = typeof import("leaflet");
 
+type CityMapProps = {
+  clusters: ClusterRecord[];
+  selectedId?: string | null;
+  onSelect?: (id: string) => void;
+  height?: string;
+  className?: string;
+  navigationPosition?: "top-right" | "bottom-right";
+};
+
+export function CityMap({
+  clusters,
+  selectedId,
+  onSelect,
+  height = "100%",
+  className,
+}: CityMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<ReturnType<LeafletModule["map"]> | null>(null);
+  const markersRef = useRef<ReturnType<LeafletModule["marker"]>[]>([]);
+  const leafletRef = useRef<LeafletModule | null>(null);
+  const [ready, setReady] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load leaflet + init map
   useEffect(() => {
-    if (!containerRef.current) return
-    mapboxgl.accessToken = env.mapboxToken || 'pk.placeholder'
+    if (!containerRef.current) return;
 
-    const map = new mapboxgl.Map({
-      container: containerRef.current,
-      style: 'mapbox://styles/mapbox/light-v11',
-      center: [env.defaultLng, env.defaultLat],
-      zoom: 11,
-    })
-    mapRef.current = map
-    map.addControl(new mapboxgl.NavigationControl(), 'bottom-right')
+    let cancelled = false;
 
-    return () => { map.remove() }
-  }, [])
+    (async () => {
+      try {
+        const [L] = await Promise.all([
+          import("leaflet"),
+          import("leaflet/dist/leaflet.css"),
+        ]);
 
+        if (cancelled || !containerRef.current) return;
+
+        leafletRef.current = L.default ?? (L as unknown as LeafletModule);
+        const Lib = leafletRef.current;
+
+        const map = Lib.map(containerRef.current, {
+          center: [env.defaultLat, env.defaultLng],
+          zoom: 12,
+          zoomControl: true,
+        });
+
+        Lib.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        }).addTo(map);
+
+        mapRef.current = map;
+        setReady(true);
+      } catch (e) {
+        if (!cancelled) {
+          console.error("Leaflet init failed:", e);
+          setError("Map could not be loaded");
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
+  // Sync markers
   useEffect(() => {
-    const map = mapRef.current
-    if (!map) return
+    const map = mapRef.current;
+    const L = leafletRef.current;
+    if (!map || !L || !ready) return;
 
-    // Clear old markers
-    markersRef.current.forEach(m => m.remove())
-    markersRef.current = []
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
 
-    clusters.forEach(c => {
-      const color = CATEGORY_META[c.category]?.color ?? '#94a3b8'
-      const el = document.createElement('div')
-      el.style.cssText = `
-        width:36px; height:36px; border-radius:50%;
-        background:${color}; border:2px solid white;
-        box-shadow:0 2px 8px rgba(0,0,0,.25);
-        display:flex; align-items:center; justify-content:center;
-        color:white; font-size:11px; font-weight:700;
-        cursor:pointer; transition:transform 0.15s;
-        ${c.id === selectedId ? 'transform:scale(1.25);' : ''}
-      `
-      el.textContent = String(c.reportCount)
-      el.addEventListener('click', () => onSelect?.(c.id))
+    clusters.forEach((cluster) => {
+      const color = CATEGORY_META[cluster.category]?.color ?? "#94a3b8";
+      const isSelected = cluster.id === selectedId;
+      const size = isSelected ? 38 : 30;
 
-      const marker = new mapboxgl.Marker(el)
-        .setLngLat([c.lng, c.lat])
-        .addTo(map)
-      markersRef.current.push(marker)
-    })
-  }, [clusters, selectedId, onSelect])
+      const icon = L.divIcon({
+        className: "",
+        html: `<div style="
+          width:${size}px;height:${size}px;border-radius:50%;
+          background:${color};border:${isSelected ? 3 : 2}px solid white;
+          box-shadow:0 2px 10px rgba(0,0,0,.3);
+          display:flex;align-items:center;justify-content:center;
+          color:white;font-size:${isSelected ? 13 : 11}px;font-weight:700;
+          font-family:Inter,system-ui,sans-serif;cursor:pointer;
+        ">${cluster.reportCount}</div>`,
+        iconSize: [size, size],
+        iconAnchor: [size / 2, size / 2],
+      });
 
-  return <div ref={containerRef} style={{ width: '100%', height }} />
+      const marker = L.marker([cluster.lat, cluster.lng], { icon });
+      marker.on("click", () => onSelect?.(cluster.id));
+      marker.addTo(map);
+      markersRef.current.push(marker);
+    });
+  }, [clusters, selectedId, onSelect, ready]);
+
+  if (error) {
+    return (
+      <div
+        className={className}
+        style={{
+          width: "100%",
+          height,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "#f1f5f9",
+          borderRadius: "inherit",
+        }}
+      >
+        <p style={{ color: "#64748b", fontSize: 14 }}>{error}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className={className}
+      style={{ width: "100%", height }}
+    />
+  );
 }

@@ -73,3 +73,407 @@ body {
   transition: background 0.15s;
 }
 .btn-ghost:hover { background: #f8fafc; }
+
+.citizen-atmosphere {
+  background:
+    radial-gradient(circle at top center, rgba(255, 236, 201, 0.85), rgba(255, 236, 201, 0) 30%),
+    linear-gradient(180deg, #fbf7ef 0%, #f6f9fc 36%, #eef4f8 100%);
+}
+
+.citizen-frame {
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 34px;
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 40px 100px -52px rgba(15, 23, 42, 0.34);
+  backdrop-filter: blur(10px);
+}
+
+.citizen-v2-scene {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.citizen-v2-frame {
+  display: flex;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.citizen-v2-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  padding: 24px 18px;
+  border-right: 1px solid #e2e8f0;
+  background: #ffffff;
+}
+
+.citizen-v2-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.citizen-v2-brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  color: #0f766e;
+  background: linear-gradient(135deg, #d1fae5 0%, #ecfeff 100%);
+  box-shadow: inset 0 0 0 1px rgba(13, 148, 136, 0.12);
+}
+
+.citizen-v2-brand-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  color: #0f172a;
+}
+
+.citizen-v2-brand-city {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.citizen-v2-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 28px;
+}
+
+.citizen-v2-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: #334155;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.citizen-v2-nav-link:hover {
+  background: rgba(240, 249, 255, 0.85);
+  color: #0f172a;
+}
+
+.citizen-v2-nav-link.is-active {
+  color: #0f766e;
+  background: linear-gradient(135deg, rgba(220, 252, 231, 0.95) 0%, rgba(240, 253, 250, 0.95) 100%);
+  box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.14);
+}
+
+.citizen-v2-sidebar-card {
+  margin-top: 24px;
+  padding: 14px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(252, 248, 241, 0.95) 0%, rgba(244, 250, 247, 0.95) 100%);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+}
+
+.citizen-v2-sidebar-card-title,
+.citizen-v2-panel h2,
+.citizen-v2-page-header h1 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.citizen-v2-sidebar-card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.citizen-v2-sidebar-card-body,
+.citizen-v2-body-copy {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.citizen-v2-main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.citizen-v2-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.citizen-v2-topbar-spacer {
+  flex: 1;
+}
+
+.citizen-v2-topbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.citizen-v2-icon-button,
+.citizen-v2-profile-button,
+.citizen-v2-primary-link,
+.citizen-v2-inline-link {
+  border: 0;
+  text-decoration: none;
+}
+
+.citizen-v2-icon-button,
+.citizen-v2-profile-button {
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.95);
+}
+
+.citizen-v2-icon-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  color: #64748b;
+}
+
+.citizen-v2-notification-dot {
+  position: absolute;
+  top: 11px;
+  right: 12px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: #ef4444;
+}
+
+.citizen-v2-profile-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 18px;
+  color: #0f172a;
+}
+
+.citizen-v2-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #f8d9c8 0%, #f3e4d1 100%);
+  color: #7c2d12;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.citizen-v2-profile-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.citizen-v2-profile-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.citizen-v2-profile-role {
+  font-size: 0.84rem;
+  color: #64748b;
+}
+
+.citizen-v2-primary-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 24px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #0f766e 0%, #0f766e 100%);
+  color: #fff;
+  font-size: 0.96rem;
+  font-weight: 700;
+  box-shadow: 0 24px 54px -34px rgba(15, 118, 110, 0.9);
+}
+
+.citizen-v2-content {
+  flex: 1;
+  padding: 16px 24px 28px;
+  overflow: auto;
+}
+
+.citizen-v2-page-header {
+  max-width: 760px;
+}
+
+.citizen-v2-page-header h1 {
+  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  line-height: 1.15;
+  font-weight: 800;
+}
+
+.citizen-v2-page-header p {
+  margin: 6px 0 0;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.citizen-v2-overview-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 24px;
+  grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+.citizen-v2-panel {
+  padding: 16px;
+  border-radius: 20px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.citizen-v2-panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.citizen-v2-eyebrow {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #0f766e;
+}
+
+.citizen-v2-inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #0f766e;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.citizen-v2-map-placeholder {
+  position: relative;
+  min-height: 420px;
+  margin-top: 22px;
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(135deg, rgba(240, 249, 255, 0.95) 0%, rgba(248, 250, 252, 0.94) 46%, rgba(236, 253, 245, 0.96) 100%);
+  box-shadow: inset 0 0 0 1px rgba(203, 213, 225, 0.8);
+}
+
+.citizen-v2-map-glow {
+  position: absolute;
+  inset: 14% 22%;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(45, 212, 191, 0.22) 0%, rgba(45, 212, 191, 0) 74%);
+}
+
+.citizen-v2-map-card {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 18px 20px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 24px 70px -44px rgba(15, 23, 42, 0.3);
+  color: #0f172a;
+}
+
+.citizen-v2-map-card p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: #475569;
+}
+
+.citizen-v2-side-stack {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+.citizen-v2-trust-panel {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.citizen-v2-trust-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #dcfce7 0%, #ecfdf5 100%);
+  color: #0f766e;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 1180px) {
+  .citizen-v2-frame {
+    flex-direction: column;
+  }
+
+  .citizen-v2-sidebar {
+    width: auto;
+    border-right: 0;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .citizen-v2-overview-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .citizen-v2-frame {
+    min-height: 100vh;
+  }
+
+  .citizen-v2-sidebar,
+  .citizen-v2-topbar,
+  .citizen-v2-content {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .citizen-v2-page-header h1 {
+    font-size: 2.15rem;
+  }
+
+  .citizen-v2-map-placeholder {
+    min-height: 320px;
+  }
+}

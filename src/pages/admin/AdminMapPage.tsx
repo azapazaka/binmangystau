@@ -1,141 +1,384 @@
-// src/pages/admin/AdminMapPage.tsx
-import { useEffect, useState } from 'react'
-import { listClusters, updateClusterStatus } from '@/lib/api'
-import { CityMap } from '@/components/maps/CityMap'
-import { CategoryBadge } from '@/components/ui/CategoryBadge'
-import { STATUS_META } from '@/lib/constants'
-import { X } from 'lucide-react'
-import { format } from 'date-fns'
-import type { ClusterRecord, ReportCategory } from '@/types'
+import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import {
+  ArrowRight,
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 
-const CATEGORIES: { key: string; label: string }[] = [
-  { key: 'all',     label: 'Все' },
-  { key: 'road',    label: 'Дороги' },
-  { key: 'light',   label: 'Освещение' },
-  { key: 'trash',   label: 'Мусор' },
-  { key: 'traffic', label: 'Трафик' },
-  { key: 'other',   label: 'Другое' },
-]
+import { CityMap } from "@/components/maps/CityMap";
+import { CategoryBadge } from "@/components/ui/CategoryBadge";
+import { listClusters, listReports, updateClusterStatus } from "@/lib/api";
+import { CATEGORY_META, STATUS_META } from "@/lib/constants";
+import type { ClusterRecord, ReportCategory, ReportRecord } from "@/types";
+
+const CATEGORIES = [
+  { key: "all",     label: "All"     },
+  { key: "road",    label: "Roads"   },
+  { key: "light",   label: "Lights"  },
+  { key: "trash",   label: "Trash"   },
+  { key: "traffic", label: "Traffic" },
+  { key: "other",   label: "Other"   },
+];
+
+function buildTrendData() {
+  const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  return labels.map((day) => ({
+    day,
+    reports: Math.floor(Math.random() * 18 + 4),
+  }));
+}
 
 export default function AdminMapPage() {
-  const [clusters, setClusters] = useState<ClusterRecord[]>([])
-  const [cat, setCat] = useState('all')
-  const [selected, setSelected] = useState<ClusterRecord | null>(null)
+  const [clusters, setClusters] = useState<ClusterRecord[]>([]);
+  const [reports, setReports] = useState<ReportRecord[]>([]);
+  const [cat, setCat] = useState("all");
+  const [selected, setSelected] = useState<ClusterRecord | null>(null);
+  const [search, setSearch] = useState("");
+  const [trendData] = useState(buildTrendData);
 
   useEffect(() => {
-    listClusters({ category: cat !== 'all' ? cat as ReportCategory : undefined })
+    listClusters({
+      category: cat !== "all" ? (cat as ReportCategory) : undefined,
+    })
       .then(setClusters)
-      .catch(console.error)
-  }, [cat])
+      .catch(console.error);
+  }, [cat]);
 
-  const handleStatusChange = async (status: ClusterRecord['status']) => {
-    if (!selected) return
+  useEffect(() => {
+    listReports().then(setReports).catch(console.error);
+  }, []);
+
+  const handleStatusChange = async (status: ClusterRecord["status"]) => {
+    if (!selected) return;
     try {
-      await updateClusterStatus(selected.id, status)
-      setClusters(cs => cs.map(c => c.id === selected.id ? { ...c, status } : c))
-      setSelected(s => s ? { ...s, status } : null)
+      await updateClusterStatus(selected.id, status);
+      setClusters((cs) =>
+        cs.map((c) => (c.id === selected.id ? { ...c, status } : c)),
+      );
+      setSelected((s) => (s ? { ...s, status } : null));
     } catch (error) {
-      console.error('Failed to update status:', error)
+      console.error("Failed to update status:", error);
     }
-  }
+  };
+
+  const nearbyReports = reports
+    .filter((r) => {
+      if (search.trim()) {
+        const q = search.toLowerCase();
+        return (
+          (r.address?.toLowerCase().includes(q)) ||
+          (r.district?.toLowerCase().includes(q)) ||
+          r.description.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    })
+    .slice(0, 8);
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="space-y-3">
+      <header>
+        <h1 className="text-lg font-bold text-slate-900">Explore Issues</h1>
+        <p className="mt-0.5 text-xs text-slate-500">
+          Explore and manage all clusters across the city.
+        </p>
+      </header>
+
       {/* Filter bar */}
-      <div className="flex items-center gap-2 px-5 py-3 bg-white border-b border-slate-200 overflow-x-auto shrink-0">
-        <span className="text-xs text-slate-500 font-medium shrink-0 mr-1">Фильтр:</span>
-        {CATEGORIES.map(c => (
-          <button key={c.key} onClick={() => setCat(c.key)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
-              cat === c.key
-                ? 'bg-green-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}>
-            {c.label}
-          </button>
-        ))}
-        <span className="ml-auto text-xs text-slate-400 shrink-0">{clusters.length} кластеров</span>
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="flex min-w-[160px] flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
+          <Search size={14} className="text-slate-400" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search location"
+            className="w-full bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400"
+          />
+        </label>
+        <div className="flex flex-wrap gap-1.5">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => setCat(c.key)}
+              className={[
+                "rounded-xl border px-3 py-1.5 text-xs font-medium transition",
+                cat === c.key
+                  ? "border-slate-900 bg-slate-900 text-white"
+                  : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+              ].join(" ")}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+        <button
+          type="button"
+          className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+        >
+          <SlidersHorizontal size={12} />
+          Filters
+        </button>
+        <span className="ml-auto text-[11px] text-slate-400">
+          {clusters.length} clusters
+        </span>
       </div>
 
-      {/* Map + panel */}
-      <div className="flex flex-1 min-h-0 relative">
-        <div className="flex-1">
-          <CityMap
-            clusters={clusters}
-            selectedId={selected?.id}
-            onSelect={id => setSelected(clusters.find(c => c.id === id) ?? null)}
-            height="100%"
-          />
-        </div>
+      {/* Map + detail */}
+      <div className="grid gap-3 xl:grid-cols-[1fr_300px]">
+        <div className="space-y-3">
+          <div className="citizen-v2-panel !p-2">
+            <div className="overflow-hidden rounded-2xl">
+              <CityMap
+                clusters={clusters}
+                selectedId={selected?.id}
+                onSelect={(id) =>
+                  setSelected(clusters.find((c) => c.id === id) ?? null)
+                }
+                height="400px"
+                className="rounded-2xl"
+              />
+            </div>
+          </div>
 
-        {/* Cluster detail panel */}
-        {selected && (
-          <div className="absolute right-0 top-0 h-full w-80 bg-white border-l border-slate-200 shadow-xl flex flex-col overflow-y-auto z-10">
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100">
-              <CategoryBadge category={selected.category} />
-              <button onClick={() => setSelected(null)} className="text-slate-400 hover:text-slate-700">
-                <X size={16} />
+          {/* Nearby Issues Table */}
+          <div className="citizen-v2-panel">
+            <div className="flex items-center justify-between">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
+                Nearby Issues
+              </p>
+              <button
+                type="button"
+                className="flex items-center gap-1 text-[11px] font-semibold text-teal-700"
+              >
+                View all reports <ArrowRight size={11} />
               </button>
             </div>
 
-            <div className="p-4 flex flex-col gap-3">
+            <div className="mt-3 overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-100 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                    <th className="pb-2 pr-3">Photo</th>
+                    <th className="pb-2 pr-3">Description</th>
+                    <th className="pb-2 pr-3">Location</th>
+                    <th className="pb-2 pr-3">Date</th>
+                    <th className="pb-2 pr-3">Category</th>
+                    <th className="pb-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {nearbyReports.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-6 text-center text-slate-400">
+                        No reports found
+                      </td>
+                    </tr>
+                  ) : (
+                    nearbyReports.map((r) => {
+                      const sm = STATUS_META[r.status];
+                      return (
+                        <tr
+                          key={r.id}
+                          className="border-b border-slate-50 transition hover:bg-slate-50/60"
+                        >
+                          <td className="py-2 pr-3">
+                            {r.photoUrl ? (
+                              <img
+                                src={r.photoUrl}
+                                alt=""
+                                className="h-9 w-9 rounded-lg object-cover"
+                              />
+                            ) : (
+                              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-100 text-[8px] text-slate-400">
+                                —
+                              </div>
+                            )}
+                          </td>
+                          <td className="max-w-[180px] truncate py-2 pr-3 font-medium text-slate-900">
+                            {r.description || "No description"}
+                          </td>
+                          <td className="py-2 pr-3 text-slate-500">
+                            <div className="flex items-center gap-1">
+                              <MapPin size={10} className="text-slate-400" />
+                              <span className="max-w-[120px] truncate">
+                                {r.address ?? r.district ?? "—"}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="py-2 pr-3 text-slate-500">
+                            {format(new Date(r.createdAt), "dd.MM.yy")}
+                          </td>
+                          <td className="py-2 pr-3">
+                            <CategoryBadge category={r.userCategory} />
+                          </td>
+                          <td className="py-2">
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${sm.bgClass} ${sm.textClass}`}
+                            >
+                              {sm.label}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Right detail panel */}
+        {selected ? (
+          <div className="space-y-3">
+            <div className="citizen-v2-panel">
+              <div className="flex items-center justify-between">
+                <CategoryBadge category={selected.category} />
+                <button
+                  type="button"
+                  onClick={() => setSelected(null)}
+                  className="text-slate-400 hover:text-slate-700"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
               {selected.representativePhotoUrl && (
-                <img src={selected.representativePhotoUrl} alt=""
-                  className="w-full h-36 object-cover rounded-lg" />
+                <img
+                  src={selected.representativePhotoUrl}
+                  alt=""
+                  className="mt-3 h-32 w-full rounded-2xl object-cover"
+                />
               )}
 
-              <div>
-                <h3 className="font-bold text-slate-900">
-                  {selected.address ?? `${selected.lat.toFixed(4)}, ${selected.lng.toFixed(4)}`}
-                </h3>
-                {selected.district && (
-                  <p className="text-xs text-slate-400 mt-0.5">{selected.district}</p>
-                )}
-              </div>
+              <p className="mt-3 text-sm font-bold text-slate-900">
+                {selected.address ??
+                  `${selected.lat.toFixed(4)}, ${selected.lng.toFixed(4)}`}
+              </p>
+              {selected.district && (
+                <p className="mt-0.5 text-xs text-slate-500">
+                  {selected.district}
+                </p>
+              )}
 
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="bg-slate-50 rounded-lg p-2">
-                  <p className="text-lg font-bold text-slate-900">{selected.reportCount}</p>
-                  <p className="text-[10px] text-slate-400">Обращений</p>
-                </div>
-                <div className="bg-slate-50 rounded-lg p-2">
-                  <p className="text-lg font-bold text-slate-900">
-                    {selected.priorityScore > 66 ? 'Выс.' : selected.priorityScore > 33 ? 'Сред.' : 'Низк.'}
+              <div className="mt-3 grid grid-cols-3 gap-1.5 text-center">
+                <div className="rounded-xl bg-slate-50 p-2">
+                  <p className="text-sm font-bold text-slate-900">
+                    {selected.reportCount}
                   </p>
-                  <p className="text-[10px] text-slate-400">Приоритет</p>
+                  <p className="text-[9px] text-slate-400">Reports</p>
                 </div>
-                <div className="bg-slate-50 rounded-lg p-2">
-                  <p className="text-lg font-bold text-slate-900">{Math.round(selected.priorityScore)}</p>
-                  <p className="text-[10px] text-slate-400">Рейтинг</p>
+                <div className="rounded-xl bg-slate-50 p-2">
+                  <p className="text-sm font-bold text-slate-900">
+                    {Math.round(selected.priorityScore)}
+                  </p>
+                  <p className="text-[9px] text-slate-400">Score</p>
+                </div>
+                <div className="rounded-xl bg-slate-50 p-2">
+                  <p className="text-sm font-bold text-slate-900">
+                    {selected.priorityScore > 66
+                      ? "High"
+                      : selected.priorityScore > 33
+                        ? "Med"
+                        : "Low"}
+                  </p>
+                  <p className="text-[9px] text-slate-400">Priority</p>
                 </div>
               </div>
 
-              <div>
-                <p className="text-xs font-medium text-slate-500 mb-1">Статус</p>
-                <div className="flex gap-2">
-                  {(['open', 'in_progress', 'closed'] as const).map(s => {
-                    const sm = STATUS_META[s]
+              <div className="mt-3">
+                <p className="text-[11px] font-semibold text-slate-500">Status</p>
+                <div className="mt-1.5 flex gap-1.5">
+                  {(["open", "in_progress", "closed"] as const).map((s) => {
+                    const sm = STATUS_META[s];
                     return (
-                      <button key={s} onClick={() => handleStatusChange(s)}
-                        className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-semibold border transition-colors ${
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => handleStatusChange(s)}
+                        className={[
+                          "flex-1 rounded-xl border px-2 py-1.5 text-[11px] font-semibold transition",
                           selected.status === s
                             ? `${sm.bgClass} ${sm.textClass} border-current`
-                            : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
-                        }`}>
+                            : "border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100",
+                        ].join(" ")}
+                      >
                         {sm.label}
                       </button>
-                    )
+                    );
                   })}
                 </div>
               </div>
 
-              <p className="text-xs text-slate-400">
-                Создано: {format(new Date(selected.createdAt), 'dd.MM.yyyy')}
+              <p className="mt-3 text-[10px] text-slate-400">
+                Created:{" "}
+                {format(new Date(selected.createdAt), "dd.MM.yyyy")}
               </p>
             </div>
+
+            {/* Trend chart */}
+            <div className="citizen-v2-panel">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
+                Report Trend
+              </p>
+              <p className="mt-1 text-[10px] text-slate-400">
+                Reports in this cluster over the past week
+              </p>
+              <div className="mt-3" style={{ height: 120 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={trendData}>
+                    <XAxis
+                      dataKey="day"
+                      tick={{ fontSize: 10, fill: "#94a3b8" }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis hide />
+                    <Tooltip
+                      contentStyle={{
+                        fontSize: 11,
+                        borderRadius: 10,
+                        border: "1px solid #e2e8f0",
+                        boxShadow: "0 4px 12px rgba(0,0,0,.08)",
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="reports"
+                      stroke={
+                        selected
+                          ? CATEGORY_META[selected.category]?.color ?? "#0f766e"
+                          : "#0f766e"
+                      }
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div
+            className="citizen-v2-panel flex items-center justify-center text-xs text-slate-400"
+            style={{ minHeight: 200 }}
+          >
+            Select a cluster on the map
           </div>
         )}
       </div>
     </div>
-  )
+  );
 }

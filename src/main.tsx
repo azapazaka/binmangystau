@@ -1,41 +1,65 @@
 // src/main.tsx
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider, Navigate, Outlet, useLocation } from 'react-router'
+import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from 'react-router'
 import './index.css'
+import { AppShell } from '@/components/layout/AppShell'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 
 // Pages
-import LoginPage from '@/pages/auth/LoginPage'
-import AdminOverview from '@/pages/admin/AdminOverview'
 import AdminMapPage from '@/pages/admin/AdminMapPage'
+import AdminOverview from '@/pages/admin/AdminOverview'
+import AdminWasteContainersPage from '@/pages/admin/AdminWasteContainersPage'
+import LoginPage from '@/pages/auth/LoginPage'
+import LandingPage from '@/pages/LandingPage'
+import CitizenHomePage from '@/pages/citizen/CitizenHomePage'
+import CitizenMapPage from '@/pages/citizen/CitizenMapPage'
+import CitizenMyReportsPage from '@/pages/citizen/CitizenMyReportsPage'
+import CitizenSettingsPage from '@/pages/citizen/CitizenSettingsPage'
+import CitizenVerifyPage from '@/pages/citizen/CitizenVerifyPage'
 import ReportWizard from '@/pages/citizen/ReportWizard'
-import { AppShell } from '@/components/layout/AppShell'
 
 function RequireAuth({ role }: { role: 'citizen' | 'admin' }) {
   const { user, loading } = useAuth()
   const loc = useLocation()
-  if (loading) return <div className="flex items-center justify-center h-screen text-slate-400">Загрузка…</div>
+
+  if (loading) {
+    return <div className="flex h-screen items-center justify-center text-slate-400">Загрузка…</div>
+  }
+
   if (!user) return <Navigate to={`/login/${role}`} state={{ from: loc }} replace />
   if (user.role !== role) return <Navigate to={`/login/${user.role}`} replace />
-  return <AppShell role={role}><Outlet /></AppShell>
+
+  if (role === 'citizen') return <Outlet />
+
+  return (
+    <AppShell role={role}>
+      <Outlet />
+    </AppShell>
+  )
 }
 
 const router = createBrowserRouter([
-  { path: '/',                    element: <Navigate to="/admin" replace /> },
-  { path: '/login/:role',         element: <LoginPage /> },
+  { path: '/', element: <LandingPage /> },
+  { path: '/login/:role', element: <LoginPage /> },
   {
     element: <RequireAuth role="admin" />,
     children: [
-      { path: '/admin',           element: <AdminOverview /> },
-      { path: '/admin/map',       element: <AdminMapPage /> },
+      { path: '/admin', element: <AdminOverview /> },
+      { path: '/admin/map', element: <AdminMapPage /> },
+      { path: '/admin/waste', element: <AdminWasteContainersPage /> },
     ],
   },
   {
     element: <RequireAuth role="citizen" />,
     children: [
-      { path: '/citizen/report',     element: <ReportWizard /> },
-      { path: '/citizen/my-reports', element: <div className="p-8 text-slate-500">Мои обращения — скоро</div> },
+      { path: '/citizen', element: <CitizenHomePage /> },
+      { path: '/citizen/map', element: <CitizenMapPage /> },
+      { path: '/citizen/report', element: <ReportWizard /> },
+      { path: '/citizen/my-reports', element: <CitizenMyReportsPage /> },
+      { path: '/citizen/verify', element: <CitizenVerifyPage /> },
+      { path: '/citizen/profile', element: <CitizenSettingsPage /> },
+      { path: '/citizen/settings', element: <CitizenSettingsPage /> },
     ],
   },
 ])
@@ -45,5 +69,5 @@ createRoot(document.getElementById('root')!).render(
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
-  </StrictMode>
+  </StrictMode>,
 )

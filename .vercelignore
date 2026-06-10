@@ -1,0 +1,10 @@
+app
+components
+lib
+types
+docs
+tests
+.next
+next-env.d.ts
+next.config.ts
+netlify.toml
