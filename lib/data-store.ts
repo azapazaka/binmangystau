@@ -3,7 +3,7 @@ import { isAfter, subDays } from "date-fns";
 import { classifyReportImage } from "@/lib/ai/classify-report-image";
 import { analyzeReportWithProvider } from "@/lib/ai/provider";
 import { findMatchingCluster } from "@/lib/clustering";
-import { env } from "@/lib/env";
+import { env, isSupabaseConfigured } from "@/lib/env";
 import { forwardGeocode, reverseGeocode } from "@/lib/geocoding";
 import { getHumanConfirmationStatus } from "@/lib/human-confirmation";
 import { buildPriorityAssessment, getEffectiveCategory, getEffectiveVisualSeverity } from "@/lib/priority";
@@ -112,6 +112,10 @@ export async function listClusters(filters: ClusterFilters = {}) {
 }
 
 export async function getDashboardStats(): Promise<DashboardStats> {
+  if (!isSupabaseConfigured()) {
+    return getDemoDashboardStats();
+  }
+
   const admin = createSupabaseAdminClient();
   const [reportsResult, weeklyResult, inProgressResult, resolvedResult, reviewMetricsResult] =
     await Promise.all([
@@ -168,6 +172,19 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     correctedReports,
     aiAgreementRate:
       reviewedReports > 0 ? Math.round((aiCorrectReports / reviewedReports) * 100) : 0,
+  };
+}
+
+function getDemoDashboardStats(): DashboardStats {
+  return {
+    totalReports: 18,
+    weeklyReports: 7,
+    inProgress: 4,
+    resolved: 6,
+    reviewedReports: 11,
+    aiCorrectReports: 9,
+    correctedReports: 2,
+    aiAgreementRate: 82,
   };
 }
 

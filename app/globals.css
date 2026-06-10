@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
   --background: #f6f1eb;
@@ -689,6 +690,65 @@ body.panel-mode-active[data-panel-theme="dark"] {
 .panel-map-canvas .mapboxgl-canvas {
   height: 100% !important;
   width: 100% !important;
+}
+
+.panel-map-canvas,
+.panel-map-canvas .leaflet-container {
+  height: 100% !important;
+  width: 100% !important;
+}
+
+.panel-map-canvas .leaflet-control-zoom a,
+.panel-map-canvas .leaflet-popup-content-wrapper,
+.panel-map-canvas .leaflet-popup-tip {
+  background: rgba(12, 18, 28, 0.96);
+  color: #f8fafc;
+}
+
+.panel-map-canvas .leaflet-control-zoom {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.panel-map-canvas .leaflet-control-zoom a {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  height: 34px;
+  line-height: 34px;
+  width: 34px;
+}
+
+.panel-map-canvas .leaflet-control-attribution {
+  background: rgba(7, 10, 18, 0.72);
+  color: rgba(226, 232, 240, 0.84);
+}
+
+.panel-map-canvas .leaflet-control-attribution a {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.panel-map-canvas .leaflet-popup-content {
+  margin: 12px 14px;
+}
+
+.citypulse-leaflet-marker-shell {
+  background: transparent;
+  border: 0;
+}
+
+.citypulse-leaflet-marker {
+  background: var(--marker-color);
+  border: 2px solid rgba(255, 255, 255, 0.94);
+  border-radius: 999px;
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--marker-color) 18%, transparent);
+  display: block;
+}
+
+.citypulse-leaflet-marker-selected {
+  border-width: 3px;
+  box-shadow:
+    0 0 0 8px color-mix(in srgb, var(--marker-color) 20%, transparent),
+    0 0 0 12px rgba(255, 255, 255, 0.08);
 }
 
 .portal-page {
