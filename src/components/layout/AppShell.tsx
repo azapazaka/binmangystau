@@ -1,27 +1,12 @@
 import type { ReactNode } from 'react'
-import {
-  BarChart3,
-  Bell,
-  ChevronDown,
-  LayoutDashboard,
-  LogOut,
-  Map,
-  ClipboardList,
-  Recycle,
-  Settings,
-  Users,
-} from 'lucide-react'
+import { Bell, ChevronDown, LogOut, Map, Recycle, Settings } from 'lucide-react'
 import { NavLink } from 'react-router'
 import { useAuth } from '@/contexts/AuthContext'
 import { CityPulseLogo } from '@/components/icons'
 
 const ADMIN_NAV = [
-  { label: 'Обзор', href: '/admin', icon: LayoutDashboard },
-  { label: 'Обращения', href: '/admin/reports', icon: ClipboardList },
-  { label: 'Карта', href: '/admin/map', icon: Map },
+  { label: 'Карта и обращения', href: '/admin/map', icon: Map },
   { label: 'Контейнеры', href: '/admin/waste', icon: Recycle },
-  { label: 'Аналитика', href: '/admin/analytics', icon: BarChart3 },
-  { label: 'Сообщество', href: '/admin/community', icon: Users },
   { label: 'Настройки', href: '/admin/settings', icon: Settings },
 ]
 
@@ -43,7 +28,7 @@ function AdminSidebar() {
             <NavLink
               key={item.label}
               to={item.href}
-              end={item.href === '/admin'}
+              end={item.href === '/admin/map'}
               className={({ isActive }) =>
                 `citizen-v2-nav-link${isActive ? ' is-active' : ''}`
               }
@@ -54,13 +39,6 @@ function AdminSidebar() {
           )
         })}
       </nav>
-
-      <div className="citizen-v2-sidebar-card">
-        <p className="citizen-v2-sidebar-card-title">Городской контур</p>
-        <p className="citizen-v2-sidebar-card-body">
-          Обращения, карта, контейнеры и аналитика в одном рабочем окне.
-        </p>
-      </div>
     </aside>
   )
 }
@@ -82,7 +60,12 @@ function AdminTopbar() {
         </div>
       </div>
       <div className="citizen-v2-topbar-actions">
-        <button type="button" className="citizen-v2-icon-button" style={{ width: 38, height: 38 }} aria-label="Уведомления">
+        <button
+          type="button"
+          className="citizen-v2-icon-button"
+          style={{ width: 38, height: 38 }}
+          aria-label="Уведомления"
+        >
           <Bell size={16} />
           <span className="citizen-v2-notification-dot" aria-hidden="true" />
         </button>

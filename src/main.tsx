@@ -5,11 +5,7 @@ import './index.css'
 import { AppShell } from '@/components/layout/AppShell'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 
-import AdminAnalyticsPage from '@/pages/admin/AdminAnalyticsPage'
-import AdminCommunityPage from '@/pages/admin/AdminCommunityPage'
 import AdminMapPage from '@/pages/admin/AdminMapPage'
-import AdminOverview from '@/pages/admin/AdminOverview'
-import AdminReportsPage from '@/pages/admin/AdminReportsPage'
 import AdminSettingsPage from '@/pages/admin/AdminSettingsPage'
 import AdminWasteContainersPage from '@/pages/admin/AdminWasteContainersPage'
 import LoginPage from '@/pages/auth/LoginPage'
@@ -44,13 +40,13 @@ const router = createBrowserRouter([
   { path: '/login/:role', element: <LoginPage /> },
   {
     element: <RequireAuth role="admin" />,
-    children: [
-      { path: '/admin', element: <AdminOverview /> },
-      { path: '/admin/reports', element: <AdminReportsPage /> },
+  children: [
+      { path: '/admin', element: <Navigate to="/admin/map" replace /> },
+      { path: '/admin/reports', element: <Navigate to="/admin/map" replace /> },
       { path: '/admin/map', element: <AdminMapPage /> },
       { path: '/admin/waste', element: <AdminWasteContainersPage /> },
-      { path: '/admin/analytics', element: <AdminAnalyticsPage /> },
-      { path: '/admin/community', element: <AdminCommunityPage /> },
+      { path: '/admin/analytics', element: <Navigate to="/admin/map" replace /> },
+      { path: '/admin/community', element: <Navigate to="/admin/map" replace /> },
       { path: '/admin/settings', element: <AdminSettingsPage /> },
     ],
   },
