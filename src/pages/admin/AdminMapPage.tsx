@@ -45,6 +45,49 @@ const SEVERITY_META: Record<AiVisualSeverity, { label: string; bg: string; text:
 };
 
 // ── Report detail modal ────────────────────────────────────────────────────
+function getEffectiveReportCategory(report: ReportRecord): ReportCategory {
+  return report.expertCategory ?? report.aiCategory ?? report.userCategory;
+}
+
+function getEffectiveReportSeverity(report: ReportRecord): AiVisualSeverity {
+  return report.expertVisualSeverity ?? report.aiVisualSeverity ?? "low";
+}
+
+function getSeverityScore(severity: AiVisualSeverity) {
+  if (severity === "high") return 78;
+  if (severity === "medium") return 52;
+  return 28;
+}
+
+function reportToSyntheticCluster(report: ReportRecord): ClusterRecord {
+  const effectiveCategory = getEffectiveReportCategory(report);
+  const effectiveVisualSeverity = getEffectiveReportSeverity(report);
+
+  return {
+    id: `report:${report.id}`,
+    category: effectiveCategory,
+    effectiveCategory,
+    lat: report.lat,
+    lng: report.lng,
+    address: report.address,
+    district: report.district,
+    zoneCoefficient: 1,
+    reportCount: 1,
+    severity: report.severity || getSeverityScore(effectiveVisualSeverity),
+    priorityScore: report.priorityScore || getSeverityScore(effectiveVisualSeverity),
+    priorityReason: report.priorityReason,
+    topFactors: report.topFactors,
+    prioritySourceReportId: report.id,
+    status: report.status,
+    representativePhotoUrl: report.photoUrl,
+    aiValidationStatus: report.aiValidationStatus,
+    effectiveVisualSeverity,
+    moderatorReviewStatus: report.reviewStatus,
+    createdAt: report.createdAt,
+    updatedAt: report.updatedAt,
+  };
+}
+
 function ReportModal({
   report,
   onClose,
@@ -366,25 +409,34 @@ function ClusterPanel({
   onClose,
   onStatusChange,
   onOpenReport,
+  fallbackReports,
 }: {
   cluster: ClusterRecord;
   onClose: () => void;
   onStatusChange: (status: ClusterRecord["status"]) => void;
   onOpenReport: (report: ReportRecord) => void;
+  fallbackReports: ReportRecord[];
 }) {
   const [reports, setReports] = useState<ReportRecord[]>([]);
   const [loadingReports, setLoadingReports] = useState(true);
 
   useEffect(() => {
+    if (cluster.id.startsWith("report:") && cluster.prioritySourceReportId) {
+      setReports(fallbackReports.filter((report) => report.id === cluster.prioritySourceReportId));
+      setLoadingReports(false);
+      return;
+    }
+
     setLoadingReports(true);
     listReports({ clusterId: cluster.id })
       .then(setReports)
       .catch(console.error)
       .finally(() => setLoadingReports(false));
-  }, [cluster.id]);
+  }, [cluster.id, cluster.prioritySourceReportId, fallbackReports]);
 
   const aiStatus = AI_STATUS_META[cluster.aiValidationStatus ?? "unavailable"];
   const sm = STATUS_META[cluster.status];
+  const isSyntheticCluster = cluster.id.startsWith("report:");
 
   return (
     <div className="citizen-v2-panel h-full overflow-y-auto">
@@ -470,9 +522,10 @@ function ClusterPanel({
               <button
                 key={status}
                 type="button"
+                disabled={isSyntheticCluster}
                 onClick={() => onStatusChange(status)}
                 className={[
-                  "flex-1 rounded-xl border px-2 py-1.5 text-[11px] font-semibold transition",
+                  "flex-1 rounded-xl border px-2 py-1.5 text-[11px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-50",
                   cluster.status === status
                     ? `${meta.bgClass} ${meta.textClass} border-current`
                     : "border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100",
@@ -539,9 +592,15 @@ function ClusterPanel({
               );
             })
           )}
+          </div>
         </div>
+
+        {isSyntheticCluster && (
+          <p className="mt-2 text-[10px] text-slate-400">
+            Для этой точки кластер ещё не создан. На карте она показана напрямую из обращения.
+          </p>
+        )}
       </div>
-    </div>
   );
 }
 
@@ -606,11 +665,33 @@ export default function AdminMapPage() {
     };
   }, [cat, selected?.id]);
 
+  const displayClusters = useMemo(() => {
+    const clusterIds = new Set(clusters.map((cluster) => cluster.id));
+    const orphanReports = allReports.filter((report) => {
+      const effectiveCategory = getEffectiveReportCategory(report);
+      const matchesCategory = cat === "all" || effectiveCategory === cat;
+      const hasCoordinates = Number.isFinite(report.lat) && Number.isFinite(report.lng);
+      const missingCluster = !report.clusterId || !clusterIds.has(report.clusterId);
+
+      return matchesCategory && hasCoordinates && missingCluster;
+    });
+
+    return [...clusters, ...orphanReports.map(reportToSyntheticCluster)];
+  }, [allReports, cat, clusters]);
+
   const stats = useMemo(() => {
-    const active = clusters.filter((c) => c.status !== "closed").length;
-    const highPriority = clusters.filter((c) => c.priorityScore >= 65).length;
-    return { reports: allReports.length, clusters: clusters.length, active, highPriority };
-  }, [clusters, allReports]);
+    const active = displayClusters.filter((c) => c.status !== "closed").length;
+    const highPriority = displayClusters.filter((c) => c.priorityScore >= 65).length;
+    return { reports: allReports.length, clusters: displayClusters.length, active, highPriority };
+  }, [allReports, displayClusters]);
+
+  useEffect(() => {
+    setSelected((current) => {
+      if (!displayClusters.length) return null;
+      if (!current) return displayClusters[0];
+      return displayClusters.find((cluster) => cluster.id === current.id) ?? displayClusters[0];
+    });
+  }, [displayClusters]);
 
   const handleStatusChange = async (status: ClusterRecord["status"]) => {
     if (!selected) return;
@@ -727,10 +808,10 @@ export default function AdminMapPage() {
           <div className="citizen-v2-panel !p-2">
             <div className="overflow-hidden rounded-2xl">
               <CityMap
-                clusters={clusters}
+                clusters={displayClusters}
                 selectedId={selected?.id}
                 onSelect={(id) =>
-                  setSelected(clusters.find((c) => c.id === id) ?? null)
+                  setSelected(displayClusters.find((c) => c.id === id) ?? null)
                 }
                 height="440px"
                 className="rounded-2xl"
@@ -836,6 +917,7 @@ export default function AdminMapPage() {
             onClose={() => setSelected(null)}
             onStatusChange={handleStatusChange}
             onOpenReport={setOpenReport}
+            fallbackReports={allReports}
           />
         ) : (
           <div
