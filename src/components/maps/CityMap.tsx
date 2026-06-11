@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 
-import { CATEGORY_META } from "@/lib/constants";
 import { env } from "@/lib/env";
 import type { ClusterRecord } from "@/types";
 
@@ -28,6 +27,13 @@ export function CityMap({
   const leafletRef = useRef<LeafletModule | null>(null);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  function getClusterColor(cluster: ClusterRecord) {
+    if (cluster.status === "closed") return "#94a3b8";
+    if (cluster.effectiveVisualSeverity === "high" || cluster.priorityScore >= 66) return "#ef4444";
+    if (cluster.effectiveVisualSeverity === "medium" || cluster.priorityScore >= 33) return "#f59e0b";
+    return "#22c55e";
+  }
 
   // Load leaflet + init map
   useEffect(() => {
@@ -88,7 +94,7 @@ export function CityMap({
     markersRef.current = [];
 
     clusters.forEach((cluster) => {
-      const color = CATEGORY_META[cluster.category]?.color ?? "#94a3b8";
+      const color = getClusterColor(cluster);
       const isSelected = cluster.id === selectedId;
       const size = isSelected ? 38 : 30;
 

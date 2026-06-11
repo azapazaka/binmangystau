@@ -20,6 +20,7 @@ import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { useAuth } from "@/contexts/AuthContext";
 import { listClusters, listReports, reviewReport, updateClusterStatus } from "@/lib/api";
 import { AI_STATUS_META, CATEGORY_META, STATUS_META } from "@/lib/constants";
+import { supabase } from "@/lib/supabase";
 import type {
   AiVisualSeverity,
   ClusterRecord,
@@ -553,24 +554,57 @@ export default function AdminMapPage() {
   const [search, setSearch] = useState("");
   const [openReport, setOpenReport] = useState<ReportRecord | null>(null);
 
+  async function refreshClusters(currentCategory: string, selectedId?: string | null) {
+    const nextClusters = await listClusters({
+      category: currentCategory !== "all" ? (currentCategory as ReportCategory) : undefined,
+    });
+
+    setClusters(nextClusters);
+    setSelected((current) => {
+      const targetId = selectedId ?? current?.id ?? null;
+      return targetId
+        ? (nextClusters.find((cluster) => cluster.id === targetId) ?? nextClusters[0] ?? null)
+        : (nextClusters[0] ?? null);
+    });
+  }
+
+  async function refreshReports() {
+    const nextReports = await listReports();
+    setAllReports(nextReports);
+  }
+
   useEffect(() => {
-    listClusters({
-      category: cat !== "all" ? (cat as ReportCategory) : undefined,
-    })
-      .then((nextClusters) => {
-        setClusters(nextClusters);
-        setSelected((current) =>
-          current
-            ? (nextClusters.find((c) => c.id === current.id) ?? nextClusters[0] ?? null)
-            : (nextClusters[0] ?? null),
-        );
-      })
-      .catch(console.error);
+    refreshClusters(cat).catch(console.error);
   }, [cat]);
 
   useEffect(() => {
-    listReports().then(setAllReports).catch(console.error);
+    refreshReports().catch(console.error);
   }, []);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-map-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "clusters" },
+        () => {
+          refreshClusters(cat, selected?.id ?? null).catch(console.error);
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "reports" },
+        () => {
+          refreshReports().catch(console.error);
+          refreshClusters(cat, selected?.id ?? null).catch(console.error);
+        },
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [cat, selected?.id]);
 
   const stats = useMemo(() => {
     const active = clusters.filter((c) => c.status !== "closed").length;
