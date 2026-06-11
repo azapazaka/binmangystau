@@ -1,6 +1,7 @@
 // src/lib/api.ts
 import { supabase } from './supabase'
-import type { ClusterRecord, ReportRecord, DashboardStats } from '@/types'
+import { analyzeReportImage, normalizeAiResult } from './ai'
+import type { ClusterRecord, ReportRecord, DashboardStats, ReportCategory } from '@/types'
 
 const SESSION_EXPIRED_MESSAGE = 'Сессия истекла. Войдите снова и отправьте обращение повторно.'
 
@@ -81,7 +82,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
 
 export async function createReport(input: {
   photo: File
-  userCategory: string
+  userCategory: ReportCategory
   description: string
   lat: number
   lng: number
@@ -100,6 +101,13 @@ export async function createReport(input: {
 
   const { data: urlData } = supabase.storage.from('reports').getPublicUrl(path)
 
+  const aiResult = await analyzeReportImage(
+    urlData.publicUrl,
+    input.userCategory,
+    input.description,
+  )
+  const ai = normalizeAiResult(aiResult)
+
   const { error } = await supabase.from('reports').insert({
     user_category: input.userCategory,
     description: input.description,
@@ -109,9 +117,13 @@ export async function createReport(input: {
     address: input.address,
     submitted_by: input.submittedBy,
     status: 'open',
-    ai_validation_status: 'unavailable',
-    ai_needs_review: false,
-    ai_tags: [],
+    ai_validation_status: ai.ai_validation_status,
+    ai_needs_review: ai.ai_needs_review,
+    ai_category: ai.ai_category,
+    ai_confidence: ai.ai_confidence,
+    ai_tags: ai.ai_tags,
+    ai_reason: ai.ai_reason,
+    ai_visual_severity: ai.ai_visual_severity,
     ai_priority_score: 0,
     ai_top_factors: [],
     review_status: 'pending',
