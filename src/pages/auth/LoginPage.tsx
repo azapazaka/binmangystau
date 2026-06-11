@@ -34,37 +34,37 @@ export default function LoginPage() {
 
   const roleMeta = isAdmin
     ? {
-        eyebrow: "City operations",
-        title: "Step into the control room",
+        eyebrow: "Городские операции",
+        title: "Войдите в центр управления",
         subtitle:
-          "Review clusters, coordinate response, and keep the signal clean before backlog becomes public reality.",
-        badge: "Admin access",
+          "Проверяйте кластеры, координируйте реагирование и держите поток обращений под контролем, пока очередь не стала проблемой.",
+        badge: "Доступ администратора",
         icon: <LayoutDashboard size={18} />,
         accent: "from-emerald-500 via-teal-500 to-sky-500",
         surface: "from-emerald-50 via-white to-sky-50",
         switchHref: "/login/citizen",
-        switchLabel: "Sign in as citizen",
+        switchLabel: "Войти как житель",
         highlights: [
-          "Live issue map with cluster priorities",
-          "Report moderation and AI review queue",
-          "Community pulse and response analytics",
+          "Карта обращений с приоритетами кластеров",
+          "Модерация обращений и очередь AI-проверки",
+          "Пульс сообщества и аналитика реакции",
         ],
       }
     : {
-        eyebrow: "Citizen portal",
-        title: "Report issues without losing momentum",
+        eyebrow: "Портал жителя",
+        title: "Сообщайте о проблемах без лишней возни",
         subtitle:
-          "Submit a problem, follow the response, and help verify what is really happening around Aktau.",
-        badge: "Citizen access",
+          "Отправляйте обращение, следите за реакцией и помогайте подтверждать, что происходит вокруг Актау.",
+        badge: "Доступ жителя",
         icon: <Users size={18} />,
         accent: "from-amber-400 via-emerald-400 to-teal-500",
         surface: "from-amber-50 via-white to-emerald-50",
         switchHref: "/login/admin",
-        switchLabel: "Sign in as admin",
+        switchLabel: "Войти как администратор",
         highlights: [
-          "Fast report capture with map context",
-          "Personal activity, verification, and status tracking",
-          "Shared civic signal powered by Supabase data",
+          "Быстрая подача обращения с контекстом карты",
+          "Личная активность, проверка и отслеживание статуса",
+          "Общий городской сигнал на базе данных Supabase",
         ],
       };
 
@@ -133,7 +133,7 @@ export default function LoginPage() {
               <CityPulseLogo size={34} />
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.22em] text-slate-400">
-                  City platform
+                  Городская платформа
                 </p>
                 <p className="text-lg font-black tracking-[-0.03em] text-slate-950">
                   {APP_NAME}
@@ -175,10 +175,10 @@ export default function LoginPage() {
               <div className="rounded-[28px] border border-slate-200/80 bg-white/86 p-5 shadow-[0_24px_55px_-42px_rgba(15,23,42,0.45)]">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-bold text-slate-900">Demo access</p>
+                    <p className="text-sm font-bold text-slate-900">Демо-доступ</p>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      Use the built-in demo account to inspect the full Vite app
-                      without creating a new user first.
+                      Используйте встроенную демо-учётную запись, чтобы изучить
+                      приложение без создания нового пользователя.
                     </p>
                   </div>
                   <Sparkles size={18} className="mt-1 text-amber-500" />
@@ -194,7 +194,7 @@ export default function LoginPage() {
                   </div>
                   <div className="rounded-2xl bg-slate-50 px-4 py-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Password
+                      Пароль
                     </p>
                     <p className="mt-1 text-sm font-semibold text-slate-900">
                       {DEMO_ACCOUNTS[role as "citizen" | "admin"].password}
@@ -218,7 +218,7 @@ export default function LoginPage() {
                     : "text-slate-500 hover:text-slate-900",
                 ].join(" ")}
               >
-                Citizen
+                Житель
               </Link>
               <Link
                 to="/login/admin"
@@ -229,22 +229,22 @@ export default function LoginPage() {
                     : "text-slate-500 hover:text-slate-900",
                 ].join(" ")}
               >
-                Admin
+                Админ
               </Link>
             </div>
 
             <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_26px_70px_-42px_rgba(15,23,42,0.35)] sm:p-8">
               <div className="mb-6">
                 <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-400">
-                  Secure access
+                  Защищённый вход
                 </p>
                 <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-                  {isRegisterMode ? `Create your ${APP_NAME} account` : `Continue to ${APP_NAME}`}
+                  {isRegisterMode ? `Создайте аккаунт ${APP_NAME}` : `Продолжите в ${APP_NAME}`}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
                   {isRegisterMode
-                    ? "Create a citizen account to submit reports and follow response progress."
-                    : "Use your live Supabase credentials or preload the demo account for this role."}
+                    ? "Создайте учётную запись жителя, чтобы отправлять обращения и следить за реакцией."
+                    : "Используйте действующие данные Supabase или демо-аккаунт для этой роли."}
                 </p>
               </div>
 
@@ -252,14 +252,14 @@ export default function LoginPage() {
                 {isRegisterMode ? (
                   <div>
                     <label className="mb-1.5 block text-[13px] font-semibold text-slate-700">
-                      Full name
+                      Имя и фамилия
                     </label>
                     <input
                       type="text"
                       value={fullName}
                       onChange={(event) => setFullName(event.target.value)}
                       required
-                      placeholder="Aigerim Serik"
+                      placeholder="Айгерим Серик"
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
                     />
                   </div>
@@ -267,7 +267,7 @@ export default function LoginPage() {
 
                 <div>
                   <label className="mb-1.5 block text-[13px] font-semibold text-slate-700">
-                    Email
+                    Почта
                   </label>
                   <input
                     type="email"
@@ -281,7 +281,7 @@ export default function LoginPage() {
 
                 <div>
                   <label className="mb-1.5 block text-[13px] font-semibold text-slate-700">
-                    Password
+                    Пароль
                   </label>
                   <div className="relative">
                     <input
@@ -289,7 +289,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
                       required
-                      placeholder="Enter your password"
+                      placeholder="Введите пароль"
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 pr-11 text-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
                     />
                     <button
@@ -319,13 +319,13 @@ export default function LoginPage() {
                   disabled={loading}
                   className="btn-primary mt-1 w-full rounded-2xl py-3.5 text-sm font-bold"
                 >
-                  {loading
+                    {loading
                     ? isRegisterMode
-                      ? "Creating account..."
-                      : "Signing in..."
+                      ? "Создаём аккаунт..."
+                      : "Входим..."
                     : isRegisterMode
-                      ? "Create account"
-                      : "Sign in"}
+                      ? "Создать аккаунт"
+                      : "Войти"}
                 </button>
               </form>
 
@@ -334,7 +334,7 @@ export default function LoginPage() {
                   onClick={fill}
                   className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                 >
-                  Use demo account
+                  Использовать демо-аккаунт
                 </button>
                 <Link
                   to={roleMeta.switchHref}
@@ -357,8 +357,8 @@ export default function LoginPage() {
                     className="text-sm font-semibold text-emerald-700 transition hover:text-emerald-800"
                   >
                     {isRegisterMode
-                      ? "Already have an account? Sign in"
-                      : "Need an account? Register"}
+                      ? "Уже есть аккаунт? Войти"
+                      : "Нет аккаунта? Зарегистрироваться"}
                   </button>
                 </div>
               ) : null}
@@ -370,12 +370,12 @@ export default function LoginPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-900">
-                      Aktau live workspace
+                      Рабочее пространство Актау
                     </p>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      This session connects to the same Vite production app used
-                      for reports, analytics, waste operations, and community
-                      review.
+                      Эта сессия подключена к тому же Vite-приложению, которое
+                      используется для обращений, аналитики, управления вывозом
+                      и проверки сообщества.
                     </p>
                   </div>
                 </div>

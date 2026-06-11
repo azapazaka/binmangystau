@@ -184,6 +184,6 @@ describe("AuthContext registration", () => {
     await waitFor(() =>
       expect(screen.getByTestId("result")).toHaveTextContent('"status":"error"'),
     );
-    expect(screen.getByTestId("result")).toHaveTextContent("User already registered");
+    expect(screen.getByTestId("result")).toHaveTextContent("Пользователь с таким email уже зарегистрирован.");
   });
 });

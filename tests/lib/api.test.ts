@@ -77,7 +77,7 @@ describe("createReport", () => {
         address: "Aktau",
         submittedBy: "user-1",
       }),
-    ).rejects.toThrow("Your session expired. Sign in again and resubmit the report.");
+    ).rejects.toThrow("Сессия истекла. Войдите снова и отправьте обращение повторно.");
 
     expect(uploadMock).not.toHaveBeenCalled();
     expect(insertMock).not.toHaveBeenCalled();

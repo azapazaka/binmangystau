@@ -39,7 +39,19 @@ function userFromSession(session: Session): AuthUser {
 }
 
 function authErrorMessage(error: { message?: string } | null | undefined): string | null {
-  return error?.message ?? null
+  const message = error?.message?.trim()
+  if (!message) return null
+
+  const normalized = message.toLowerCase()
+  if (normalized.includes('email not confirmed')) return 'Подтвердите адрес электронной почты и войдите снова.'
+  if (normalized.includes('invalid login credentials')) return 'Неверный email или пароль.'
+  if (normalized.includes('user already registered')) return 'Пользователь с таким email уже зарегистрирован.'
+  if (normalized.includes('email address is invalid') || normalized.includes('invalid email')) {
+    return 'Введите корректный email.'
+  }
+  if (normalized.includes('password')) return 'Пароль не соответствует требованиям.'
+
+  return message
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -79,7 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     if (error) {
-      return { status: 'error', message: error.message }
+      return { status: 'error', message: authErrorMessage(error) ?? error.message }
     }
 
     if (data.session) {
@@ -97,14 +109,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { status: 'signed_in' }
     }
 
-    const fallbackError = authErrorMessage(signInError)
-    if (fallbackError && !fallbackError.toLowerCase().includes('email not confirmed')) {
-      return { status: 'error', message: fallbackError }
+    const rawSignInMessage = signInError?.message?.trim() ?? ''
+    if (rawSignInMessage.toLowerCase().includes('email not confirmed')) {
+      return {
+        status: 'confirm_email',
+        message: 'Аккаунт создан. Подтвердите email и войдите снова.',
+      }
     }
 
     return {
-      status: 'confirm_email',
-      message: 'Account created. Confirm your email, then sign in to continue.',
+      status: 'error',
+      message: authErrorMessage(signInError) ?? rawSignInMessage,
     }
   }
 

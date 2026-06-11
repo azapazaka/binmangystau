@@ -2,7 +2,7 @@
 import { supabase } from './supabase'
 import type { ClusterRecord, ReportRecord, DashboardStats } from '@/types'
 
-const SESSION_EXPIRED_MESSAGE = 'Your session expired. Sign in again and resubmit the report.'
+const SESSION_EXPIRED_MESSAGE = 'Сессия истекла. Войдите снова и отправьте обращение повторно.'
 
 async function requireAuthenticatedUser(expectedUserId?: string) {
   const { data, error } = await supabase.auth.getUser()
