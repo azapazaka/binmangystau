@@ -88,6 +88,18 @@ const STATUS_CONFIG: Record<SmartBinStatus, { label: string; bg: string; text: s
   offline: { label: "Оффлайн", bg: "bg-slate-100", text: "text-slate-600" },
 };
 
+function getBinVisualSeverity(bin: BinRecord): ClusterRecord["effectiveVisualSeverity"] {
+  if (bin.status === "fire" || bin.status === "sos" || bin.status === "full" || bin.fillLevel >= 81) {
+    return "high";
+  }
+
+  if (bin.status === "warning" || bin.fillLevel >= 51) {
+    return "medium";
+  }
+
+  return "low";
+}
+
 export default function AdminWasteContainersPage() {
   const [bins] = useState(SEED_BINS);
   const [selectedBin, setSelectedBin] = useState<BinRecord | null>(null);
@@ -116,7 +128,7 @@ export default function AdminWasteContainersPage() {
         status: bin.status === "normal" ? "open" as const : bin.status === "offline" ? "closed" as const : "in_progress" as const,
         representativePhotoUrl: null,
         aiValidationStatus: "valid" as const,
-        effectiveVisualSeverity: null,
+        effectiveVisualSeverity: getBinVisualSeverity(bin),
         moderatorReviewStatus: "pending" as const,
         createdAt: bin.lastSeen,
         updatedAt: bin.lastSeen,
