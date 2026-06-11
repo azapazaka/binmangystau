@@ -16,7 +16,7 @@ vi.mock("@/contexts/AuthContext", () => ({
 }));
 
 describe("AppShell admin layout", () => {
-  it("uses dedicated admin shell classes instead of citizen shell classes", () => {
+  it("uses a dedicated admin bottom bar instead of a sidebar", () => {
     const { container } = render(
       <MemoryRouter initialEntries={["/admin/map"]}>
         <AppShell role="admin">
@@ -27,8 +27,8 @@ describe("AppShell admin layout", () => {
 
     expect(screen.getByText("Admin content")).toBeInTheDocument();
     expect(container.querySelector(".admin-shell-frame")).toBeTruthy();
-    expect(container.querySelector(".admin-shell-sidebar")).toBeTruthy();
     expect(container.querySelector(".admin-shell-topbar")).toBeTruthy();
-    expect(container.querySelector(".citizen-v2-sidebar")).toBeNull();
+    expect(container.querySelector(".admin-shell-bottom-bar")).toBeTruthy();
+    expect(container.querySelector(".admin-shell-sidebar")).toBeNull();
   });
 });

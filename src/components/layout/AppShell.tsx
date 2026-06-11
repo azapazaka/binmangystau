@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { Bell, ChevronDown, LogOut, Map, Recycle, Settings } from "lucide-react";
 import { NavLink } from "react-router";
 
-import { CityPulseLogo } from "@/components/icons";
 import { useAuth } from "@/contexts/AuthContext";
 
 const ADMIN_NAV = [
@@ -12,37 +11,29 @@ const ADMIN_NAV = [
   { label: "Настройки", href: "/admin/settings", icon: Settings },
 ];
 
-function AdminSidebar() {
+function AdminBottomBar() {
   return (
-    <aside className="admin-shell-sidebar">
-      <div className="admin-shell-brand">
-        <CityPulseLogo size={34} />
-        <div>
-          <p className="admin-shell-brand-title">CityPulse</p>
-          <p className="admin-shell-brand-subtitle">Оператор</p>
-        </div>
-      </div>
+    <nav aria-label="Навигация оператора" className="admin-shell-bottom-bar">
+      {ADMIN_NAV.map((item) => {
+        const Icon = item.icon;
 
-      <nav className="admin-shell-nav">
-        {ADMIN_NAV.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <NavLink
-              key={item.label}
-              to={item.href}
-              end={item.href === "/admin/map"}
-              className={({ isActive }) =>
-                `admin-shell-nav-link${isActive ? " is-active" : ""}`
-              }
-            >
+        return (
+          <NavLink
+            key={item.href}
+            to={item.href}
+            end={item.href === "/admin/map"}
+            className={({ isActive }) =>
+              `admin-shell-bottom-link${isActive ? " is-active" : ""}`
+            }
+          >
+            <span className="admin-shell-bottom-link-icon">
               <Icon size={18} />
-              <span>{item.label}</span>
-            </NavLink>
-          );
-        })}
-      </nav>
-    </aside>
+            </span>
+            <span className="admin-shell-bottom-link-label">{item.label}</span>
+          </NavLink>
+        );
+      })}
+    </nav>
   );
 }
 
@@ -101,11 +92,11 @@ export function AppShell({ children }: { role: string; children: ReactNode }) {
   return (
     <div className="admin-shell-scene">
       <div className="admin-shell-frame">
-        <AdminSidebar />
         <div className="admin-shell-main">
           <AdminTopbar />
           <div className="admin-shell-content">{children}</div>
         </div>
+        <AdminBottomBar />
       </div>
     </div>
   );
