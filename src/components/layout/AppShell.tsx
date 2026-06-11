@@ -1,87 +1,92 @@
-import type { ReactNode } from 'react'
-import { Bell, ChevronDown, LogOut, Map, Recycle, Settings } from 'lucide-react'
-import { NavLink } from 'react-router'
-import { useAuth } from '@/contexts/AuthContext'
-import { CityPulseLogo } from '@/components/icons'
+import type { ReactNode } from "react";
+
+import { Bell, ChevronDown, LogOut, Map, Recycle, Settings } from "lucide-react";
+import { NavLink } from "react-router";
+
+import { CityPulseLogo } from "@/components/icons";
+import { useAuth } from "@/contexts/AuthContext";
 
 const ADMIN_NAV = [
-  { label: 'Карта и обращения', href: '/admin/map', icon: Map },
-  { label: 'Контейнеры', href: '/admin/waste', icon: Recycle },
-  { label: 'Настройки', href: '/admin/settings', icon: Settings },
-]
+  { label: "Карта и обращения", href: "/admin/map", icon: Map },
+  { label: "Контейнеры", href: "/admin/waste", icon: Recycle },
+  { label: "Настройки", href: "/admin/settings", icon: Settings },
+];
 
 function AdminSidebar() {
   return (
-    <aside className="citizen-v2-sidebar">
-      <div className="citizen-v2-brand">
+    <aside className="admin-shell-sidebar">
+      <div className="admin-shell-brand">
         <CityPulseLogo size={34} />
         <div>
-          <p className="citizen-v2-brand-title">CityPulse</p>
-          <p className="citizen-v2-brand-city">Оператор</p>
+          <p className="admin-shell-brand-title">CityPulse</p>
+          <p className="admin-shell-brand-subtitle">Оператор</p>
         </div>
       </div>
 
-      <nav className="citizen-v2-nav">
+      <nav className="admin-shell-nav">
         {ADMIN_NAV.map((item) => {
-          const Icon = item.icon
+          const Icon = item.icon;
+
           return (
             <NavLink
               key={item.label}
               to={item.href}
-              end={item.href === '/admin/map'}
+              end={item.href === "/admin/map"}
               className={({ isActive }) =>
-                `citizen-v2-nav-link${isActive ? ' is-active' : ''}`
+                `admin-shell-nav-link${isActive ? " is-active" : ""}`
               }
             >
               <Icon size={18} />
               <span>{item.label}</span>
             </NavLink>
-          )
+          );
         })}
       </nav>
     </aside>
-  )
+  );
 }
 
 function AdminTopbar() {
-  const { user, signOut } = useAuth()
-  const name = user?.fullName?.trim() || 'Оператор'
+  const { user, signOut } = useAuth();
+  const name = user?.fullName?.trim() || "Оператор";
 
   return (
-    <div className="citizen-v2-topbar">
-      <div className="flex items-center gap-2">
-        <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
+    <div className="admin-shell-topbar">
+      <div className="admin-shell-topbar-filters">
+        <div className="admin-shell-filter-pill">
           Все районы
           <ChevronDown size={12} className="text-slate-400" />
         </div>
-        <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
+        <div className="admin-shell-filter-pill">
           Все категории
           <ChevronDown size={12} className="text-slate-400" />
         </div>
       </div>
-      <div className="citizen-v2-topbar-actions">
+
+      <div className="admin-shell-topbar-actions">
         <button
           type="button"
-          className="citizen-v2-icon-button"
-          style={{ width: 38, height: 38 }}
+          className="admin-shell-icon-button"
           aria-label="Уведомления"
         >
           <Bell size={16} />
-          <span className="citizen-v2-notification-dot" aria-hidden="true" />
+          <span className="admin-shell-notification-dot" aria-hidden="true" />
         </button>
-        <button type="button" className="citizen-v2-profile-button">
-          <span className="citizen-v2-avatar" style={{ width: 32, height: 32, fontSize: '0.8rem' }}>
+
+        <button type="button" className="admin-shell-profile-button">
+          <span className="admin-shell-avatar" aria-hidden="true">
             {name.charAt(0).toUpperCase()}
           </span>
-          <span className="citizen-v2-profile-copy">
-            <span className="citizen-v2-profile-name" style={{ fontSize: '0.82rem' }}>{name}</span>
-            <span className="citizen-v2-profile-role" style={{ fontSize: '0.72rem' }}>Администратор</span>
+          <span className="admin-shell-profile-copy">
+            <span className="admin-shell-profile-name">{name}</span>
+            <span className="admin-shell-profile-role">Администратор</span>
           </span>
         </button>
+
         <button
           type="button"
           onClick={signOut}
-          className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          className="admin-shell-logout-button"
           aria-label="Выйти"
         >
           <LogOut size={14} />
@@ -89,23 +94,21 @@ function AdminTopbar() {
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 export function AppShell({ children }: { role: string; children: ReactNode }) {
   return (
-    <div className="citizen-v2-scene">
-      <div className="citizen-v2-frame">
+    <div className="admin-shell-scene">
+      <div className="admin-shell-frame">
         <AdminSidebar />
-        <div className="citizen-v2-main">
+        <div className="admin-shell-main">
           <AdminTopbar />
-          <div className="citizen-v2-content">
-            {children}
-          </div>
+          <div className="admin-shell-content">{children}</div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export { ADMIN_NAV }
+export { ADMIN_NAV };
