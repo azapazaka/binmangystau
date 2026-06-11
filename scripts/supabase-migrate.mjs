@@ -231,6 +231,14 @@ DROP POLICY IF EXISTS report_human_votes_insert_auth ON public.report_human_vote
 CREATE POLICY report_human_votes_insert_auth ON public.report_human_votes FOR INSERT WITH CHECK (auth.uid() = user_id);
 DROP POLICY IF EXISTS report_human_votes_update_own ON public.report_human_votes;
 CREATE POLICY report_human_votes_update_own ON public.report_human_votes FOR UPDATE USING (auth.uid() = user_id);
+
+DROP POLICY IF EXISTS "Report images are publicly readable" ON storage.objects;
+CREATE POLICY "Report images are publicly readable" ON storage.objects FOR SELECT USING (bucket_id = 'reports');
+DROP POLICY IF EXISTS "Authenticated users can upload report images" ON storage.objects;
+CREATE POLICY "Authenticated users can upload report images" ON storage.objects FOR INSERT WITH CHECK (
+  bucket_id = 'reports'
+  AND auth.role() = 'authenticated'
+);
 `;
 
 async function main() {

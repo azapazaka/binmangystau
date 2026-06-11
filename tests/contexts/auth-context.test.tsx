@@ -101,12 +101,53 @@ describe("AuthContext registration", () => {
     );
   });
 
-  it("returns confirm_email when registration does not create a session", async () => {
+  it("falls back to password sign-in when sign-up succeeds without a session", async () => {
     signUpMock.mockResolvedValue({
       data: {
         session: null,
       },
       error: null,
+    });
+    signInWithPasswordMock.mockResolvedValue({
+      data: {
+        session: {
+          user: {
+            id: "user-2",
+            email: "aigerim@example.com",
+            user_metadata: { role: "citizen", full_name: "Aigerim" },
+          },
+        },
+      },
+      error: null,
+    });
+
+    render(
+      <AuthProvider>
+        <Harness />
+      </AuthProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Register citizen" }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("result")).toHaveTextContent('"status":"signed_in"'),
+    );
+  });
+
+  it("returns confirm_email when registration still requires email confirmation", async () => {
+    signUpMock.mockResolvedValue({
+      data: {
+        session: null,
+      },
+      error: null,
+    });
+    signInWithPasswordMock.mockResolvedValue({
+      data: {
+        session: null,
+      },
+      error: {
+        message: "Email not confirmed",
+      },
     });
 
     render(

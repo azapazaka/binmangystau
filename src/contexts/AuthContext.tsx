@@ -38,6 +38,10 @@ function userFromSession(session: Session): AuthUser {
   }
 }
 
+function authErrorMessage(error: { message?: string } | null | undefined): string | null {
+  return error?.message ?? null
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
@@ -55,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    return error?.message ?? null
+    return authErrorMessage(error)
   }
 
   const registerCitizen: AuthCtx['registerCitizen'] = async ({
@@ -81,6 +85,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data.session) {
       setUser(userFromSession(data.session))
       return { status: 'signed_in' }
+    }
+
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (signInData.session) {
+      setUser(userFromSession(signInData.session))
+      return { status: 'signed_in' }
+    }
+
+    const fallbackError = authErrorMessage(signInError)
+    if (fallbackError && !fallbackError.toLowerCase().includes('email not confirmed')) {
+      return { status: 'error', message: fallbackError }
     }
 
     return {
