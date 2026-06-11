@@ -1,4 +1,3 @@
-// src/main.tsx
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createBrowserRouter, Navigate, Outlet, RouterProvider, useLocation } from 'react-router'
@@ -6,7 +5,6 @@ import './index.css'
 import { AppShell } from '@/components/layout/AppShell'
 import { AuthProvider, useAuth } from '@/contexts/AuthContext'
 
-// Pages
 import AdminAnalyticsPage from '@/pages/admin/AdminAnalyticsPage'
 import AdminCommunityPage from '@/pages/admin/AdminCommunityPage'
 import AdminMapPage from '@/pages/admin/AdminMapPage'
@@ -16,8 +14,6 @@ import AdminSettingsPage from '@/pages/admin/AdminSettingsPage'
 import AdminWasteContainersPage from '@/pages/admin/AdminWasteContainersPage'
 import LoginPage from '@/pages/auth/LoginPage'
 import LandingPage from '@/pages/LandingPage'
-import CitizenHomePage from '@/pages/citizen/CitizenHomePage'
-import CitizenMapPage from '@/pages/citizen/CitizenMapPage'
 import CitizenMyReportsPage from '@/pages/citizen/CitizenMyReportsPage'
 import CitizenSettingsPage from '@/pages/citizen/CitizenSettingsPage'
 import CitizenVerifyPage from '@/pages/citizen/CitizenVerifyPage'
@@ -28,7 +24,7 @@ function RequireAuth({ role }: { role: 'citizen' | 'admin' }) {
   const loc = useLocation()
 
   if (loading) {
-    return <div className="flex h-screen items-center justify-center text-slate-400">Загрузка…</div>
+    return <div className="flex h-screen items-center justify-center text-slate-400">Загрузка...</div>
   }
 
   if (!user) return <Navigate to={`/login/${role}`} state={{ from: loc }} replace />
@@ -61,13 +57,13 @@ const router = createBrowserRouter([
   {
     element: <RequireAuth role="citizen" />,
     children: [
-      { path: '/citizen', element: <CitizenHomePage /> },
-      { path: '/citizen/map', element: <CitizenMapPage /> },
+      { path: '/citizen', element: <Navigate to="/citizen/report" replace /> },
+      { path: '/citizen/map', element: <Navigate to="/citizen/report" replace /> },
       { path: '/citizen/report', element: <ReportWizard /> },
       { path: '/citizen/my-reports', element: <CitizenMyReportsPage /> },
       { path: '/citizen/verify', element: <CitizenVerifyPage /> },
       { path: '/citizen/profile', element: <CitizenSettingsPage /> },
-      { path: '/citizen/settings', element: <CitizenSettingsPage /> },
+      { path: '/citizen/settings', element: <Navigate to="/citizen/report" replace /> },
     ],
   },
 ])

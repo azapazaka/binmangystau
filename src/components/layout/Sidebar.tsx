@@ -1,11 +1,9 @@
-// src/components/layout/Sidebar.tsx
 import type { ReactNode } from 'react'
 import { NavLink } from 'react-router'
 import {
   BarChart3,
   ClipboardList,
   Heart,
-  Home,
   LayoutDashboard,
   Map,
   MapPin,
@@ -29,23 +27,17 @@ const ADMIN_NAV: NavItem[] = [
 ]
 
 export const CITIZEN_NAV: NavItem[] = [
-  { label: 'Главная', href: '/citizen', icon: <Home size={18} /> },
-  { label: 'Карта', href: '/citizen/map', icon: <Map size={18} /> },
   { label: 'Новая заявка', href: '/citizen/report', icon: <MapPin size={18} /> },
   { label: 'Мои заявки', href: '/citizen/my-reports', icon: <ClipboardList size={18} /> },
   { label: 'Проверка', href: '/citizen/verify', icon: <ShieldCheck size={18} /> },
   { label: 'Профиль', href: '/citizen/profile', icon: <UserRound size={18} /> },
-  { label: 'Настройки', href: '/citizen/settings', icon: <Settings size={18} /> },
 ]
 
 export const CITIZEN_PAGE_TITLES: Record<string, string> = {
-  '/citizen': 'Городские обращения',
-  '/citizen/map': 'Карта',
   '/citizen/report': 'Новая заявка',
   '/citizen/my-reports': 'Мои заявки',
   '/citizen/verify': 'Проверка',
   '/citizen/profile': 'Профиль',
-  '/citizen/settings': 'Настройки',
 }
 
 function renderAdminSidebar(items: NavItem[]) {
@@ -97,7 +89,7 @@ function renderCitizenSidebar(items: NavItem[]) {
           <NavLink
             key={item.href}
             to={item.href}
-            end={item.href === '/citizen'}
+            end
             className={({ isActive }) =>
               [
                 'flex items-center gap-3 rounded-2xl px-4 py-3 text-[15px] font-medium transition-all',

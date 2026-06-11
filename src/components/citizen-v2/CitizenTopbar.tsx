@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { Bell, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -13,14 +13,6 @@ export function CitizenTopbar({ action }: { action?: ReactNode }) {
     <div className="citizen-v2-topbar">
       <div className="citizen-v2-topbar-spacer" />
       <div className="citizen-v2-topbar-actions">
-        <button
-          type="button"
-          className="citizen-v2-icon-button"
-          aria-label="Уведомления"
-        >
-          <Bell size={18} />
-          <span className="citizen-v2-notification-dot" aria-hidden="true" />
-        </button>
         <button type="button" className="citizen-v2-profile-button">
           <span className="citizen-v2-avatar" aria-hidden="true">
             {profileName.charAt(0).toUpperCase()}

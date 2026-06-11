@@ -1,26 +1,15 @@
 import type { ComponentType } from "react";
-import {
-  Bell,
-  FilePlus2,
-  Files,
-  Home,
-  Map,
-  Settings,
-  UserCircle,
-} from "lucide-react";
+import { FilePlus2, Files, UserCircle } from "lucide-react";
 import { NavLink } from "react-router";
 
 import { citizenCopy } from "@/components/citizen-v2/citizen-copy";
 import { CityPulseLogo } from "@/components/icons";
 
 const navIcons: Record<string, ComponentType<{ size?: number }>> = {
-  "Главная": Home,
-  "Карта": Map,
   "Новая заявка": FilePlus2,
   "Мои заявки": Files,
-  "Проверка": Bell,
+  "Проверка": Files,
   "Профиль": UserCircle,
-  "Настройки": Settings,
 };
 
 export function CitizenSidebar() {
@@ -42,7 +31,7 @@ export function CitizenSidebar() {
             <NavLink
               key={item.label}
               to={item.href}
-              end={item.href === "/citizen"}
+              end
               className={({ isActive }) =>
                 `citizen-v2-nav-link${isActive ? " is-active" : ""}`
               }
