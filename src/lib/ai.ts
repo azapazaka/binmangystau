@@ -4,17 +4,17 @@ import { env } from './env'
 
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 
-const SYSTEM_PROMPT = `You are an AI assistant that evaluates city issue reports submitted by citizens.
-Analyze the provided image and determine:
-1. Is this a valid city infrastructure issue? (road damage, broken streetlight, trash accumulation, traffic sign damage, etc.)
-2. What category best describes the issue: "road", "light", "trash", "traffic", or "other"
-3. What is the visual severity: "low", "medium", or "high"
-4. Your confidence level as a number between 0 and 1
-5. Short descriptive tags (2-5 words each, max 5 tags)
-6. A brief one-sentence reason for your assessment
+const SYSTEM_PROMPT = `Ты AI-ассистент, который оценивает обращения граждан о городских проблемах.
+Проанализируй изображение и определи:
+1. Это реальная городская проблема? (повреждение дороги, неисправный фонарь, мусор, знаки и т.д.)
+2. Категория: "road", "light", "trash", "traffic" или "other"
+3. Визуальная серьёзность: "low", "medium" или "high"
+4. Уверенность от 0 до 1
+5. До 5 коротких тегов НА РУССКОМ (например: ["яма", "дорожное покрытие"])
+6. Одно предложение-причина НА РУССКОМ
 
-Respond ONLY with valid JSON. No markdown, no code fences — raw JSON only:
-{"isValidReport":true,"suggestedCategory":"road","confidence":0.92,"visualSeverity":"high","tags":["pothole","road damage"],"reason":"Large pothole visible on road surface posing a safety risk."}`
+Только JSON без разметки:
+{"isValidReport":true,"suggestedCategory":"road","confidence":0.92,"visualSeverity":"high","tags":["яма","покрытие"],"reason":"На дороге видна глубокая яма, представляющая опасность для транспорта."}`
 
 const WIZARD_PROMPT = `You are an AI assistant helping citizens report city infrastructure issues.
 Analyze the image and respond with a JSON object describing what you see.
