@@ -1,4 +1,5 @@
 import { formatDistanceToNow } from "date-fns";
+import { ru } from "date-fns/locale";
 import {
   LoaderCircle,
   ShieldCheck,
@@ -12,8 +13,8 @@ import { listReports } from "@/lib/api";
 import type { ReportRecord } from "@/types";
 
 function formatReporter(reporterId: string | null) {
-  if (!reporterId) return "Unknown citizen";
-  return `Citizen ${reporterId.slice(0, 6).toUpperCase()}`;
+  if (!reporterId) return "Неизвестный житель";
+  return `Житель ${reporterId.slice(0, 6).toUpperCase()}`;
 }
 
 export default function AdminCommunityPage() {
@@ -33,7 +34,7 @@ export default function AdminCommunityPage() {
         setError(
           nextError instanceof Error
             ? nextError.message
-            : "Unable to load community data.",
+            : "Не удалось загрузить данные сообщества.",
         );
       })
       .finally(() => {
@@ -62,27 +63,27 @@ export default function AdminCommunityPage() {
 
     return [
       {
-        label: "Active citizens",
+        label: "Активные жители",
         value: uniqueCitizens,
-        note: "Unique reporters currently represented",
+        note: "уникальные авторы",
         icon: <Users size={18} />,
       },
       {
-        label: "Community votes",
+        label: "Голоса",
         value: totalVotes,
-        note: "Votes cast on verification items",
+        note: "по проверке заявок",
         icon: <Vote size={18} />,
       },
       {
-        label: "Public confirmations",
+        label: "Подтверждено жителями",
         value: verifiedByPublic,
-        note: "Reports confirmed real by the crowd",
+        note: "реальные случаи",
         icon: <ShieldCheck size={18} />,
       },
       {
-        label: "Disputed cases",
+        label: "Спорные случаи",
         value: disputed,
-        note: "Signals needing moderation arbitration",
+        note: "нужна модерация",
         icon: <Sparkles size={18} />,
       },
     ];
@@ -138,13 +139,12 @@ export default function AdminCommunityPage() {
   return (
     <div className="space-y-4">
       <header>
-        <p className="citizen-v2-eyebrow">Public signal</p>
+        <p className="citizen-v2-eyebrow">Сообщество</p>
         <h1 className="text-2xl font-black tracking-[-0.04em] text-slate-950">
-          Community
+          Сообщество
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-slate-500">
-          Monitor how residents are contributing, which reports create public
-          momentum, and where moderation should step in to preserve trust.
+          Активность жителей, спорные сигналы и вклад в проверку.
         </p>
       </header>
 
@@ -172,7 +172,7 @@ export default function AdminCommunityPage() {
       {loading ? (
         <div className="citizen-v2-panel flex min-h-72 items-center justify-center text-sm text-slate-500">
           <LoaderCircle className="mr-2 animate-spin" size={16} />
-          Loading community activity...
+          Загрузка активности...
         </div>
       ) : error ? (
         <div className="citizen-v2-panel rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -183,11 +183,11 @@ export default function AdminCommunityPage() {
           <section className="citizen-v2-panel">
             <div className="flex items-center justify-between">
               <div>
-                <p className="citizen-v2-eyebrow">Leaderboard</p>
-                <h2>Most active residents in the signal loop</h2>
+                <p className="citizen-v2-eyebrow">Рейтинг</p>
+                <h2>Самые активные жители</h2>
               </div>
               <p className="text-xs text-slate-500">
-                Derived from submissions, resolutions, and verification votes
+                По заявкам, закрытиям и голосам
               </p>
             </div>
             <div className="mt-5 space-y-3">
@@ -208,23 +208,24 @@ export default function AdminCommunityPage() {
                       )}
                     </p>
                     <p className="mt-1 text-sm text-slate-500">
-                      Last activity{" "}
+                      Последняя активность{" "}
                       {formatDistanceToNow(new Date(citizen.latestAt), {
                         addSuffix: true,
+                        locale: ru,
                       })}
                     </p>
                   </div>
                   <div className="text-sm text-slate-500">
                     <p className="font-semibold text-slate-900">
-                      {citizen.reports} reports
+                      {citizen.reports} заявок
                     </p>
-                    <p className="mt-1">{citizen.resolved} resolved</p>
+                    <p className="mt-1">{citizen.resolved} закрыто</p>
                   </div>
                   <div className="text-sm text-slate-500">
                     <p className="font-semibold text-amber-700">
-                      {citizen.score} pts
+                      {citizen.score} баллов
                     </p>
-                    <p className="mt-1">{citizen.votesGenerated} public votes</p>
+                    <p className="mt-1">{citizen.votesGenerated} голосов</p>
                   </div>
                 </article>
               ))}
@@ -233,8 +234,8 @@ export default function AdminCommunityPage() {
 
           <aside className="space-y-4">
             <section className="citizen-v2-panel">
-              <p className="citizen-v2-eyebrow">Watchlist</p>
-              <h2>Reports pulling community attention</h2>
+              <p className="citizen-v2-eyebrow">Фокус</p>
+              <h2>Заявки с вниманием жителей</h2>
               <div className="mt-4 space-y-3">
                 {watchlist.map((report) => (
                   <article
@@ -242,14 +243,14 @@ export default function AdminCommunityPage() {
                     className="rounded-[22px] border border-slate-200 bg-slate-50/70 px-4 py-4"
                   >
                     <p className="text-sm font-semibold text-slate-950">
-                      {report.description || "No description provided"}
+                      {report.description || "Описание не добавлено"}
                     </p>
                     <p className="mt-1 text-xs text-slate-500">
-                      {report.address ?? report.district ?? "Unknown location"}
+                      {report.address ?? report.district ?? "Локация не указана"}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-semibold">
                       <span className="rounded-full bg-white px-2 py-1 text-slate-600">
-                        {report.humanVotesTotal} votes
+                        {report.humanVotesTotal} голосов
                       </span>
                       <span className="rounded-full bg-white px-2 py-1 text-slate-600">
                         {report.humanConfirmationStatus.replace(/_/g, " ")}

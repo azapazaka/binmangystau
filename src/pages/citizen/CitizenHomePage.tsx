@@ -21,20 +21,20 @@ import { CityMap } from "@/components/maps/CityMap";
 import { useCitizenOverviewData } from "@/hooks/useCitizenOverviewData";
 
 const CATEGORY_FILTERS = [
-  { label: "All",     category: null,      color: null       },
-  { label: "Roads",   category: "road",    color: "#ef4444"  },
-  { label: "Lights",  category: "light",   color: "#f59e0b"  },
-  { label: "Trash",   category: "trash",   color: "#22c55e"  },
-  { label: "Traffic", category: "traffic", color: "#3b82f6"  },
-  { label: "Other",   category: "other",   color: "#94a3b8"  },
+  { label: "Все", category: null, color: null },
+  { label: "Дороги", category: "road", color: "#ef4444" },
+  { label: "Освещение", category: "light", color: "#f59e0b" },
+  { label: "Мусор", category: "trash", color: "#22c55e" },
+  { label: "Трафик", category: "traffic", color: "#3b82f6" },
+  { label: "Другое", category: "other", color: "#94a3b8" },
 ] as const;
 
 const CATEGORY_DISPLAY: Record<string, { label: string; color: string }> = {
-  road:    { label: "Roads",   color: "#ef4444" },
-  light:   { label: "Lights",  color: "#f59e0b" },
-  trash:   { label: "Trash",   color: "#22c55e" },
-  traffic: { label: "Traffic", color: "#3b82f6" },
-  other:   { label: "Other",   color: "#94a3b8" },
+  road: { label: "Дороги", color: "#ef4444" },
+  light: { label: "Освещение", color: "#f59e0b" },
+  trash: { label: "Мусор", color: "#22c55e" },
+  traffic: { label: "Трафик", color: "#3b82f6" },
+  other: { label: "Другое", color: "#94a3b8" },
 };
 
 const STAT_META = [
@@ -53,7 +53,7 @@ function NearbyIssueCard({
   selected: boolean;
   onSelect: () => void;
 }) {
-  const cat = CATEGORY_DISPLAY[issue.category] ?? { label: "Other", color: "#94a3b8" };
+  const cat = CATEGORY_DISPLAY[issue.category] ?? { label: "Другое", color: "#94a3b8" };
 
   return (
     <button
@@ -68,14 +68,10 @@ function NearbyIssueCard({
     >
       <div className="relative">
         {issue.imageUrl ? (
-          <img
-            src={issue.imageUrl}
-            alt={issue.title}
-            className="h-28 w-full object-cover"
-          />
+          <img src={issue.imageUrl} alt={issue.title} className="h-28 w-full object-cover" />
         ) : (
           <div className="flex h-28 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-50 text-xs font-medium text-slate-400">
-            No photo
+            Нет фото
           </div>
         )}
         <div
@@ -118,7 +114,7 @@ export default function CitizenHomePage() {
     stats,
   } = useCitizenOverviewData();
 
-  const [activeFilter, setActiveFilter] = useState("All");
+  const [activeFilter, setActiveFilter] = useState("Все");
 
   const filteredIssues = useMemo(() => {
     const f = CATEGORY_FILTERS.find((f) => f.label === activeFilter);
@@ -136,7 +132,7 @@ export default function CitizenHomePage() {
     <CitizenShell
       title={
         <>
-          Explore issues in{" "}
+          Обращения по{" "}
           <span className="relative text-teal-700">
             Aktau
             <span
@@ -146,10 +142,10 @@ export default function CitizenHomePage() {
           </span>
         </>
       }
-      subtitle="See what is happening around you and help city services respond faster."
+      subtitle="Смотрите, что происходит рядом, и помогайте службам реагировать быстрее."
       topbarAction={
         <Link to="/citizen/report" className="citizen-v2-primary-link">
-          + New Report
+          + Новая заявка
         </Link>
       }
     >
@@ -157,13 +153,13 @@ export default function CitizenHomePage() {
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-600 shadow-sm">
           <MapPin size={14} className="text-slate-400" />
-          All districts
+          Все районы
         </div>
 
         <label className="flex min-w-[180px] flex-1 cursor-text items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 shadow-sm">
           <Search size={14} className="flex-shrink-0 text-slate-400" />
           <input
-            placeholder="Search location or issue"
+            placeholder="Поиск по адресу или проблеме"
             className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
           />
         </label>
@@ -197,7 +193,7 @@ export default function CitizenHomePage() {
           className="flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50"
         >
           <SlidersHorizontal size={14} />
-          Filters
+          Фильтры
         </button>
       </div>
 
@@ -224,7 +220,7 @@ export default function CitizenHomePage() {
                   to={selectedIssue.detailsHref ?? "/citizen/map"}
                   className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
                 >
-                  View Details
+                  Подробнее
                   <ArrowRight size={15} />
                 </Link>
               ) : null
@@ -236,15 +232,15 @@ export default function CitizenHomePage() {
               <ShieldCheck size={18} />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-bold text-slate-900">Transparent. Verified. Trusted.</p>
+              <p className="text-xs font-bold text-slate-900">Прозрачно. Проверено. Понятно.</p>
               <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
-                Community verification before city services.
+                Проверка со стороны жителей до передачи в работу.
               </p>
               <Link
                 to="/citizen/verify"
                 className="mt-2 inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-slate-800"
               >
-                Verify Now
+                Проверить
               </Link>
             </div>
           </article>
@@ -255,7 +251,7 @@ export default function CitizenHomePage() {
       {loading ? (
         <div className="mt-3 flex items-center justify-center py-4 text-xs text-slate-500">
           <LoaderCircle className="mr-2 animate-spin" size={14} />
-          Loading live overview
+          Загрузка сводки
         </div>
       ) : error ? (
         <div className="mt-3 rounded-2xl border border-rose-100 bg-rose-50/80 px-4 py-3 text-xs text-rose-700">
@@ -280,10 +276,10 @@ export default function CitizenHomePage() {
       <section className="mt-4">
         <div className="mb-3 flex items-center justify-between gap-4">
           <div>
-            <p className="citizen-v2-eyebrow !mb-1">Nearby Issues</p>
+            <p className="citizen-v2-eyebrow !mb-1">Рядом</p>
           </div>
           <Link to="/citizen/map" className="citizen-v2-inline-link shrink-0 text-xs">
-            View all on map
+            Открыть на карте
             <ArrowRight size={12} />
           </Link>
         </div>
@@ -291,13 +287,13 @@ export default function CitizenHomePage() {
         {loading ? (
           <div className="flex min-h-36 items-center justify-center rounded-[20px] border border-dashed border-slate-200 bg-slate-50/60 text-sm text-slate-500">
             <LoaderCircle className="mr-2 animate-spin" size={16} />
-            Loading nearby issues
+            Загрузка обращений
           </div>
         ) : filteredIssues.length === 0 ? (
           <div className="rounded-[20px] border border-dashed border-slate-200 bg-slate-50/70 px-5 py-10 text-center">
-            <p className="text-sm font-semibold text-slate-900">No nearby issues yet</p>
+            <p className="text-sm font-semibold text-slate-900">Пока рядом нет обращений</p>
             <p className="mt-1 text-sm text-slate-500">
-              New citizen reports will appear here after they reach Supabase.
+              Новые сигналы появятся здесь после загрузки данных.
             </p>
           </div>
         ) : (

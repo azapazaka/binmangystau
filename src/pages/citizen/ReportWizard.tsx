@@ -35,12 +35,12 @@ function buildStepState(input: {
   description: string;
 }): StepState[] {
   return [
-    { label: "Add Photo", done: Boolean(input.photo) },
-    { label: "Confirm Location", done: input.address.trim().length > 0 },
-    { label: "Category", done: Boolean(input.category) },
-    { label: "Add Details", done: input.description.trim().length > 0 },
+    { label: "Фото", done: Boolean(input.photo) },
+    { label: "Локация", done: input.address.trim().length > 0 },
+    { label: "Категория", done: Boolean(input.category) },
+    { label: "Описание", done: input.description.trim().length > 0 },
     {
-      label: "Submit",
+      label: "Отправка",
       done:
         Boolean(input.photo) &&
         input.address.trim().length > 0 &&
@@ -59,7 +59,7 @@ export default function ReportWizard() {
   const [lat, setLat] = useState(env.defaultLat);
   const [lng, setLng] = useState(env.defaultLng);
   const [address, setAddress] = useState("");
-  const [district, setDistrict] = useState("Aktau");
+  const [district, setDistrict] = useState("Актау");
   const [category, setCategory] = useState<ReportCategory>("road");
   const [description, setDescription] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -104,11 +104,11 @@ export default function ReportWizard() {
         setLat(nextLat);
         setLng(nextLng);
         setAddress(`${nextLat.toFixed(5)}, ${nextLng.toFixed(5)}`);
-        setDistrict("Current location");
+        setDistrict("Текущая локация");
         setSubmitError(null);
       },
       () => {
-        setSubmitError("Location access was denied. Enter the address manually.");
+        setSubmitError("Нет доступа к геолокации. Введите адрес вручную.");
       },
     );
   }
@@ -132,7 +132,7 @@ export default function ReportWizard() {
       setDone(true);
     } catch (error) {
       setSubmitError(
-        error instanceof Error ? error.message : "Failed to submit the report.",
+        error instanceof Error ? error.message : "Не удалось отправить заявку.",
       );
     } finally {
       setSubmitting(false);
@@ -142,17 +142,17 @@ export default function ReportWizard() {
   if (done) {
     return (
       <CitizenShell
-        title="Report submitted"
-        subtitle="Your report was sent to CityPulse and is now available in the live citizen queue."
+        title="Заявка отправлена"
+        subtitle="Обращение сохранено и появилось в вашем списке."
       >
         <div className="mx-auto mt-8 max-w-3xl">
           <article className="citizen-v2-panel flex flex-col items-center px-8 py-14 text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
               <CheckCircle2 size={38} />
             </div>
-            <h2 className="mt-6 text-3xl font-bold text-slate-950">Your issue is now live.</h2>
+            <h2 className="mt-6 text-3xl font-bold text-slate-950">Заявка принята.</h2>
             <p className="mt-3 max-w-xl text-base leading-7 text-slate-600">
-              The report was uploaded successfully and will now appear in your citizen report history.
+              Обращение успешно отправлено и теперь доступно в вашем списке заявок.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <button
@@ -160,14 +160,14 @@ export default function ReportWizard() {
                 onClick={() => navigate("/citizen/my-reports")}
                 className="rounded-2xl bg-teal-700 px-6 py-3 text-sm font-semibold text-white"
               >
-                Open My Reports
+                Открыть мои заявки
               </button>
               <button
                 type="button"
                 onClick={() => navigate("/citizen")}
                 className="rounded-2xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700"
               >
-                Back to Overview
+                Назад на главную
               </button>
             </div>
           </article>
@@ -178,8 +178,8 @@ export default function ReportWizard() {
 
   return (
     <CitizenShell
-      title="Create New Report"
-      subtitle="Help improve Aktau by reporting issues in your city."
+      title="Новая заявка"
+      subtitle="Сообщите о городской проблеме в Актау."
     >
       <section className="mt-6 border-t border-slate-200/80 pt-5">
         <div className="grid gap-3 lg:grid-cols-5">
@@ -206,9 +206,9 @@ export default function ReportWizard() {
             <article className="citizen-v2-panel">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="text-2xl font-semibold text-slate-950">Add Photo of the Issue</h2>
+                  <h2 className="text-2xl font-semibold text-slate-950">Фото проблемы</h2>
                   <p className="mt-2 text-sm leading-6 text-slate-500">
-                    Clear photos help city services understand and resolve issues faster.
+                    Четкое фото помогает быстрее понять и обработать обращение.
                   </p>
                 </div>
                 <input
@@ -225,7 +225,7 @@ export default function ReportWizard() {
                   <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-slate-50">
                     <img
                       src={photoPreview}
-                      alt="Selected issue"
+                      alt="Выбранное изображение"
                       className="h-[340px] w-full object-cover"
                     />
                     <div className="flex justify-center p-5">
@@ -235,7 +235,7 @@ export default function ReportWizard() {
                         className="inline-flex items-center gap-2 rounded-2xl bg-slate-800 px-5 py-3 text-sm font-semibold text-white"
                       >
                         <Camera size={16} />
-                        Change Photo
+                        Заменить фото
                       </button>
                     </div>
                   </div>
@@ -248,13 +248,13 @@ export default function ReportWizard() {
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white text-teal-700 shadow-sm">
                       <ImagePlus size={28} />
                     </div>
-                    <p className="mt-5 text-lg font-semibold text-slate-900">Upload a photo</p>
+                    <p className="mt-5 text-lg font-semibold text-slate-900">Загрузите фото</p>
                     <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
-                      Add one photo that clearly shows the issue. The report will use this image as the live reference.
+                      Добавьте одно фото, на котором хорошо видно проблему.
                     </p>
                     <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700">
                       <Upload size={16} />
-                      Choose image
+                      Выбрать файл
                     </span>
                   </button>
                 )}
@@ -264,12 +264,12 @@ export default function ReportWizard() {
                 <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
                 <div>
                   <p className="text-sm font-semibold">
-                    {photo ? "Photo added successfully" : "Photo required"}
+                    {photo ? "Фото добавлено" : "Нужно добавить фото"}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-emerald-700/90">
                     {photo
-                      ? "Your upload is ready for submission."
-                      : "Add a photo before submitting the report."}
+                      ? "Изображение готово к отправке."
+                      : "Перед отправкой добавьте фото."}
                   </p>
                 </div>
               </div>
@@ -277,9 +277,9 @@ export default function ReportWizard() {
 
             <div className="space-y-5">
               <article className="citizen-v2-panel">
-                <h2 className="text-2xl font-semibold text-slate-950">Confirm Location</h2>
+                <h2 className="text-2xl font-semibold text-slate-950">Подтвердите локацию</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Confirm where the issue is located. You can use your current location or enter the address manually.
+                  Укажите, где находится проблема. Можно использовать текущую геолокацию или ввести адрес вручную.
                 </p>
 
                 <div className="mt-5 overflow-hidden rounded-[24px] border border-slate-200 bg-slate-50">
@@ -295,7 +295,7 @@ export default function ReportWizard() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-slate-900">
-                          {address || "No address selected yet"}
+                          {address || "Адрес пока не указан"}
                         </p>
                         <p className="mt-1 text-sm text-slate-500">{district}</p>
                       </div>
@@ -305,29 +305,29 @@ export default function ReportWizard() {
                       onClick={onUseCurrentLocation}
                       className="text-sm font-semibold text-teal-700"
                     >
-                      Use current location
+                      Моя геолокация
                     </button>
                   </div>
                 </div>
 
                 <div className="mt-4 grid gap-3">
                   <label className="grid gap-2">
-                    <span className="text-sm font-medium text-slate-700">Address</span>
+                    <span className="text-sm font-medium text-slate-700">Адрес</span>
                     <input
                       value={address}
                       onChange={(event) => {
                         setAddress(event.target.value);
-                        setDistrict("Aktau");
+                        setDistrict("Актау");
                         setSubmitError(null);
                       }}
-                      placeholder="Abay Ave. 52, Aktau"
+                      placeholder="мкр 12, дом 52, Актау"
                       className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700 outline-none transition focus:border-teal-500"
                     />
                   </label>
 
                   <div className="grid gap-3 sm:grid-cols-2">
                     <label className="grid gap-2">
-                      <span className="text-sm font-medium text-slate-700">Latitude</span>
+                      <span className="text-sm font-medium text-slate-700">Широта</span>
                       <input
                         value={lat}
                         onChange={(event) => setLat(Number(event.target.value))}
@@ -337,7 +337,7 @@ export default function ReportWizard() {
                       />
                     </label>
                     <label className="grid gap-2">
-                      <span className="text-sm font-medium text-slate-700">Longitude</span>
+                      <span className="text-sm font-medium text-slate-700">Долгота</span>
                       <input
                         value={lng}
                         onChange={(event) => setLng(Number(event.target.value))}
@@ -351,9 +351,9 @@ export default function ReportWizard() {
               </article>
 
               <article className="citizen-v2-panel">
-                <h2 className="text-2xl font-semibold text-slate-950">Issue Category</h2>
+                <h2 className="text-2xl font-semibold text-slate-950">Категория</h2>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Choose the category that best describes the issue you are reporting.
+                  Выберите категорию, которая лучше всего подходит к проблеме.
                 </p>
 
                 <div className="mt-5 rounded-[24px] bg-emerald-50/70 p-4">
@@ -373,11 +373,11 @@ export default function ReportWizard() {
                           {categoryMeta.label}
                         </p>
                         <p className="mt-1 text-sm text-slate-500">
-                          This label will be stored with the report and used for clustering.
+                          Категория будет сохранена в заявке и использована при обработке.
                         </p>
                       </div>
                     </div>
-                    <CitizenStatusBadge label="Live category" tone="success" />
+                    <CitizenStatusBadge label="Текущая категория" tone="success" />
                   </div>
                 </div>
 
@@ -418,9 +418,9 @@ export default function ReportWizard() {
               <article className="citizen-v2-panel">
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <h2 className="text-2xl font-semibold text-slate-950">Add Details</h2>
+                    <h2 className="text-2xl font-semibold text-slate-950">Описание</h2>
                     <p className="mt-2 text-sm leading-6 text-slate-500">
-                      Add context that would help city teams respond faster.
+                      Добавьте детали, которые помогут быстрее обработать заявку.
                     </p>
                   </div>
                   <span className="text-sm font-medium text-slate-400">
@@ -431,7 +431,7 @@ export default function ReportWizard() {
                   value={description}
                   onChange={(event) => setDescription(event.target.value.slice(0, 280))}
                   rows={4}
-                  placeholder="Example: Street light has been off for three nights and the area is very dark after sunset."
+                  placeholder="Например: фонарь не работает уже три дня, вечером участок совсем темный."
                   className="mt-5 w-full rounded-[22px] border border-slate-200 bg-white px-4 py-4 text-sm leading-6 text-slate-700 outline-none transition focus:border-teal-500"
                 />
               </article>
@@ -445,8 +445,8 @@ export default function ReportWizard() {
                   <Shield size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Private & Secure</p>
-                  <p className="mt-1 text-sm text-slate-500">Your report information is protected.</p>
+                  <p className="text-sm font-semibold text-slate-900">Безопасно</p>
+                  <p className="mt-1 text-sm text-slate-500">Данные обращения защищены.</p>
                 </div>
               </div>
             </article>
@@ -456,8 +456,8 @@ export default function ReportWizard() {
                   <CheckCircle2 size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Verified & Transparent</p>
-                  <p className="mt-1 text-sm text-slate-500">Reports are reviewed and shared live.</p>
+                  <p className="text-sm font-semibold text-slate-900">Проверка</p>
+                  <p className="mt-1 text-sm text-slate-500">Заявки проходят разбор и попадают в рабочую очередь.</p>
                 </div>
               </div>
             </article>
@@ -467,8 +467,8 @@ export default function ReportWizard() {
                   <Sparkles size={20} />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">Track in Real Time</p>
-                  <p className="mt-1 text-sm text-slate-500">Follow your report from submission to resolution.</p>
+                  <p className="text-sm font-semibold text-slate-900">Статус в пути</p>
+                  <p className="mt-1 text-sm text-slate-500">Следите за заявкой от отправки до закрытия.</p>
                 </div>
               </div>
             </article>
@@ -477,48 +477,48 @@ export default function ReportWizard() {
 
         <aside className="space-y-5">
           <article className="citizen-v2-panel sticky top-6">
-            <h2 className="text-2xl font-semibold text-slate-950">Review Your Report</h2>
+            <h2 className="text-2xl font-semibold text-slate-950">Проверьте заявку</h2>
             <p className="mt-2 text-sm leading-6 text-slate-500">
-              Review the details before submitting the live report.
+              Проверьте данные перед отправкой.
             </p>
 
             <div className="mt-5 overflow-hidden rounded-[24px] border border-slate-200 bg-slate-50">
               {photoPreview ? (
                 <img
                   src={photoPreview}
-                  alt="Issue preview"
+                  alt="Предпросмотр обращения"
                   className="h-48 w-full object-cover"
                 />
               ) : (
                 <div className="flex h-48 items-center justify-center text-sm font-medium text-slate-400">
-                  Add a photo to preview the report
+                  Добавьте фото для предпросмотра
                 </div>
               )}
             </div>
 
             <div className="mt-5 space-y-5">
               <div className="border-b border-slate-200 pb-4">
-                <p className="text-sm font-semibold text-slate-900">Location</p>
+                <p className="text-sm font-semibold text-slate-900">Локация</p>
                 <p className="mt-2 text-sm text-slate-700">
-                  {address || "Address not provided"}
+                  {address || "Адрес не указан"}
                 </p>
                 <p className="mt-1 text-sm text-slate-500">{district}</p>
               </div>
 
               <div className="border-b border-slate-200 pb-4">
-                <p className="text-sm font-semibold text-slate-900">Category</p>
+                <p className="text-sm font-semibold text-slate-900">Категория</p>
                 <div className="mt-3 flex items-center justify-between gap-3">
                   <CategoryBadge category={category} />
                   <span className="text-sm font-medium text-slate-500">
-                    {completedSteps}/5 complete
+                    {completedSteps}/5 шагов
                   </span>
                 </div>
               </div>
 
               <div className="border-b border-slate-200 pb-4">
-                <p className="text-sm font-semibold text-slate-900">Details</p>
+                <p className="text-sm font-semibold text-slate-900">Описание</p>
                 <p className="mt-2 text-sm leading-6 text-slate-600">
-                  {description.trim() || "No extra details added yet."}
+                  {description.trim() || "Дополнительных деталей пока нет."}
                 </p>
               </div>
             </div>
@@ -535,12 +535,12 @@ export default function ReportWizard() {
               disabled={!submitReady || submitting}
               className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-teal-700 px-5 py-4 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {submitting ? "Submitting report..." : "Submit Report"}
+              {submitting ? "Отправка..." : "Отправить заявку"}
               <ChevronRight size={16} />
             </button>
 
             <p className="mt-4 text-center text-sm text-slate-500">
-              Your report is private and secure.
+              Обращение отправляется в защищенном режиме.
             </p>
           </article>
         </aside>

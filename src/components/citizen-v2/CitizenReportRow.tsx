@@ -25,7 +25,7 @@ export function CitizenReportRow({
         <img src={issue.imageUrl} alt={issue.title} className="h-20 w-full rounded-2xl object-cover" />
       ) : (
         <div className="flex h-20 w-full items-center justify-center rounded-2xl bg-slate-100 text-xs font-semibold text-slate-400">
-          No photo
+          Нет фото
         </div>
       )}
       <div className="min-w-0">
@@ -37,7 +37,7 @@ export function CitizenReportRow({
         <CitizenStatusBadge label={issue.statusLabel} tone="info" />
       </div>
       <div className="text-sm">
-        <p className="text-slate-400">Clusters</p>
+        <p className="text-slate-400">Рядом</p>
         <p className="mt-1 text-2xl font-bold text-slate-950">{issue.distanceLabel.replace(/\D/g, "") || "0"}</p>
       </div>
       <div className="space-y-2">

@@ -1,4 +1,5 @@
 import { format, subDays } from "date-fns";
+import { ru } from "date-fns/locale";
 import {
   Activity,
   BarChart3,
@@ -57,7 +58,7 @@ export default function AdminAnalyticsPage() {
         setError(
           nextError instanceof Error
             ? nextError.message
-            : "Unable to load analytics right now.",
+            : "Не удалось загрузить аналитику.",
         );
       })
       .finally(() => {
@@ -85,7 +86,7 @@ export default function AdminAnalyticsPage() {
   const districtLoad = useMemo(() => {
     const districtMap = new Map<string, number>();
     for (const cluster of clusters) {
-      const key = cluster.district ?? "Unassigned";
+      const key = cluster.district ?? "Без района";
       districtMap.set(key, (districtMap.get(key) ?? 0) + cluster.reportCount);
     }
 
@@ -118,7 +119,7 @@ export default function AdminAnalyticsPage() {
     }
 
     return [...reportMap.keys()].map((key) => ({
-      day: format(new Date(key), "EEE"),
+      day: format(new Date(key), "EEE", { locale: ru }),
       reports: reportMap.get(key) ?? 0,
       resolved: closedMap.get(key) ?? 0,
     }));
@@ -141,27 +142,27 @@ export default function AdminAnalyticsPage() {
 
     return [
       {
-        label: "Reports tracked",
+        label: "Заявок в системе",
         value: totalReports,
-        note: "Current records across all categories",
+        note: "по всем категориям",
         icon: <BarChart3 size={18} />,
       },
       {
-        label: "Active clusters",
+        label: "Активные точки",
         value: totalClusters,
-        note: "Distinct locations under watch",
+        note: "отдельные локации",
         icon: <Activity size={18} />,
       },
       {
-        label: "High-priority sites",
+        label: "Высокий приоритет",
         value: highPriority,
-        note: "Priority score above 65",
+        note: "балл выше 65",
         icon: <Gauge size={18} />,
       },
       {
-        label: "AI coverage",
+        label: "Покрытие AI",
         value: `${aiCoverage}%`,
-        note: "Reports with usable AI classification",
+        note: "есть AI-классификация",
         icon: <Sparkles size={18} />,
       },
     ];
@@ -170,13 +171,12 @@ export default function AdminAnalyticsPage() {
   return (
     <div className="space-y-4">
       <header>
-        <p className="citizen-v2-eyebrow">System intelligence</p>
+        <p className="citizen-v2-eyebrow">Аналитика</p>
         <h1 className="text-2xl font-black tracking-[-0.04em] text-slate-950">
-          Analytics
+          Аналитика
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-slate-500">
-          See where the pressure is building, how categories are shifting, and
-          whether the AI triage layer is producing usable signal.
+          Краткая сводка по нагрузке, категориям и качеству обработки.
         </p>
       </header>
 
@@ -204,7 +204,7 @@ export default function AdminAnalyticsPage() {
       {loading ? (
         <div className="citizen-v2-panel flex min-h-72 items-center justify-center text-sm text-slate-500">
           <LoaderCircle className="mr-2 animate-spin" size={16} />
-          Loading analytics...
+          Загрузка аналитики...
         </div>
       ) : error ? (
         <div className="citizen-v2-panel rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -215,12 +215,12 @@ export default function AdminAnalyticsPage() {
           <section className="citizen-v2-panel">
             <div className="flex items-center justify-between">
               <div>
-                <p className="citizen-v2-eyebrow">Daily flow</p>
-                <h2>Reports vs. resolved clusters</h2>
+                <p className="citizen-v2-eyebrow">Динамика</p>
+                <h2>Новые и закрытые</h2>
               </div>
               <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-500">
                 <CheckCircle2 size={12} />
-                Last 7 days
+                Последние 7 дней
               </div>
             </div>
             <div className="mt-5" style={{ height: 320 }}>
@@ -238,8 +238,8 @@ export default function AdminAnalyticsPage() {
           </section>
 
           <section className="citizen-v2-panel">
-            <p className="citizen-v2-eyebrow">Category mix</p>
-            <h2>Where the signal is coming from</h2>
+            <p className="citizen-v2-eyebrow">Категории</p>
+            <h2>Распределение сигналов</h2>
             <div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_140px]">
               <div style={{ height: 260 }}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -284,11 +284,11 @@ export default function AdminAnalyticsPage() {
           <section className="citizen-v2-panel xl:col-span-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="citizen-v2-eyebrow">District load</p>
-                <h2>Top districts by issue volume</h2>
+                <p className="citizen-v2-eyebrow">Районы</p>
+                <h2>Где больше всего заявок</h2>
               </div>
               <p className="text-xs text-slate-500">
-                Derived from cluster report counts
+                По числу заявок в кластерах
               </p>
             </div>
             <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -304,7 +304,7 @@ export default function AdminAnalyticsPage() {
                     {district.volume}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
-                    reports concentrated here
+                    заявок в этом районе
                   </p>
                 </article>
               ))}

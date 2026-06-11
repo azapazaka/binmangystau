@@ -29,20 +29,20 @@ const ADMIN_NAV: NavItem[] = [
 ]
 
 export const CITIZEN_NAV: NavItem[] = [
-  { label: 'Home', href: '/citizen', icon: <Home size={18} /> },
-  { label: 'Map', href: '/citizen/map', icon: <Map size={18} /> },
-  { label: 'New Report', href: '/citizen/report', icon: <MapPin size={18} /> },
-  { label: 'My Reports', href: '/citizen/my-reports', icon: <ClipboardList size={18} /> },
-  { label: 'Verify', href: '/citizen/verify', icon: <ShieldCheck size={18} /> },
-  { label: 'Profile', href: '/citizen/profile', icon: <UserRound size={18} /> },
-  { label: 'Settings', href: '/citizen/settings', icon: <Settings size={18} /> },
+  { label: 'Главная', href: '/citizen', icon: <Home size={18} /> },
+  { label: 'Карта', href: '/citizen/map', icon: <Map size={18} /> },
+  { label: 'Новая заявка', href: '/citizen/report', icon: <MapPin size={18} /> },
+  { label: 'Мои заявки', href: '/citizen/my-reports', icon: <ClipboardList size={18} /> },
+  { label: 'Проверка', href: '/citizen/verify', icon: <ShieldCheck size={18} /> },
+  { label: 'Профиль', href: '/citizen/profile', icon: <UserRound size={18} /> },
+  { label: 'Настройки', href: '/citizen/settings', icon: <Settings size={18} /> },
 ]
 
 export const CITIZEN_PAGE_TITLES: Record<string, string> = {
-  '/citizen': 'Explore issues in Almaty',
-  '/citizen/map': 'Map',
-  '/citizen/report': 'Подать жалобу',
-  '/citizen/my-reports': 'Мои обращения',
+  '/citizen': 'Городские обращения',
+  '/citizen/map': 'Карта',
+  '/citizen/report': 'Новая заявка',
+  '/citizen/my-reports': 'Мои заявки',
   '/citizen/verify': 'Проверка',
   '/citizen/profile': 'Профиль',
   '/citizen/settings': 'Настройки',
@@ -73,7 +73,7 @@ function renderAdminSidebar(items: NavItem[]) {
       </nav>
 
       <div className="border-t border-slate-100 pt-3">
-        <p className="px-2 text-[11px] text-slate-400">Stronger city. Together.</p>
+        <p className="px-2 text-[11px] text-slate-400">Городской мониторинг</p>
       </div>
     </aside>
   )
@@ -88,7 +88,7 @@ function renderCitizenSidebar(items: NavItem[]) {
         </div>
         <div>
           <p className="text-[15px] font-extrabold tracking-[-0.02em] text-slate-950">{APP_NAME}</p>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Almaty</p>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400">Актау</p>
         </div>
       </div>
 
@@ -115,8 +115,8 @@ function renderCitizenSidebar(items: NavItem[]) {
 
       <div className="mt-6 rounded-[28px] border border-amber-100 bg-[linear-gradient(180deg,#fffdf7_0%,#fff8ec_100%)] p-4 shadow-[0_22px_55px_-38px_rgba(148,163,184,0.55)]">
         <div className="h-28 rounded-2xl bg-[linear-gradient(135deg,#d7f0db_0%,#f8e7bf_100%)]" />
-        <h3 className="mt-4 text-[15px] font-bold leading-6 text-slate-900">Together, we build a better Almaty</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-500">Every report makes our city stronger.</p>
+        <h3 className="mt-4 text-[15px] font-bold leading-6 text-slate-900">Город улучшается по шагам</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-500">Каждая заявка помогает сделать Актау чище и удобнее.</p>
         <Heart size={18} className="mt-4 text-slate-400" />
       </div>
     </aside>

@@ -1,16 +1,16 @@
 export const citizenCopy = {
-  cityName: "Aktau",
-  overviewTitle: "Explore issues in Aktau",
+  cityName: "Актау",
+  overviewTitle: "Городские обращения",
   overviewSubtitle:
-    "See what is happening around you and help city services respond faster.",
-  reportAction: "+ New Report",
+    "Смотрите, что происходит рядом, и помогайте службам реагировать быстрее.",
+  reportAction: "+ Новая заявка",
   nav: [
-    { label: "Home", href: "/citizen" },
-    { label: "Map", href: "/citizen/map" },
-    { label: "New Report", href: "/citizen/report" },
-    { label: "My Reports", href: "/citizen/my-reports" },
-    { label: "Notify", href: "/citizen/verify" },
-    { label: "Profile", href: "/citizen/profile" },
-    { label: "Settings", href: "/citizen/settings" },
+    { label: "Главная", href: "/citizen" },
+    { label: "Карта", href: "/citizen/map" },
+    { label: "Новая заявка", href: "/citizen/report" },
+    { label: "Мои заявки", href: "/citizen/my-reports" },
+    { label: "Проверка", href: "/citizen/verify" },
+    { label: "Профиль", href: "/citizen/profile" },
+    { label: "Настройки", href: "/citizen/settings" },
   ],
 } as const;

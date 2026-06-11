@@ -35,17 +35,17 @@ import type {
 /* ── Category color map ─────────────────────────────────────── */
 
 const CAT_ITEMS: { key: ReportCategory; label: string; color: string }[] = [
-  { key: "road",    label: "Roads & Potholes",    color: CATEGORY_META.road.color    },
-  { key: "trash",   label: "Trash & Cleanliness",  color: CATEGORY_META.trash.color   },
-  { key: "light",   label: "Street Lights",        color: CATEGORY_META.light.color   },
-  { key: "traffic", label: "Traffic Issues",        color: CATEGORY_META.traffic.color },
-  { key: "other",   label: "Other",                 color: CATEGORY_META.other.color   },
+  { key: "road", label: "Дороги", color: CATEGORY_META.road.color },
+  { key: "trash", label: "Мусор", color: CATEGORY_META.trash.color },
+  { key: "light", label: "Освещение", color: CATEGORY_META.light.color },
+  { key: "traffic", label: "Трафик", color: CATEGORY_META.traffic.color },
+  { key: "other", label: "Другое", color: CATEGORY_META.other.color },
 ];
 
 /* ── Mock timeline data (would come from analytics API) ───── */
 
 function buildTimelineData() {
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const days = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
   return days.map((d) => ({
     day: d,
     road:    Math.floor(Math.random() * 20 + 5),
@@ -95,14 +95,14 @@ export default function AdminOverview() {
 
   const hour = new Date().getHours();
   const greeting =
-    hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-  const firstName = user?.fullName?.split(" ")[0] ?? "Admin";
+    hour < 12 ? "Доброе утро" : hour < 18 ? "Добрый день" : "Добрый вечер";
+  const firstName = user?.fullName?.split(" ")[0] ?? "Админ";
 
   if (loading) {
     return (
       <div className="flex h-64 items-center justify-center text-sm text-slate-500">
         <LoaderCircle className="mr-2 animate-spin" size={18} />
-        Loading dashboard...
+        Загрузка панели...
       </div>
     );
   }
@@ -115,7 +115,7 @@ export default function AdminOverview() {
           {greeting}, {firstName} <span aria-hidden="true">👋</span>
         </h1>
         <p className="mt-0.5 text-xs text-slate-500">
-          Here's what's happening in Aktau today.
+          Краткая сводка по Актау.
         </p>
       </header>
 
@@ -139,7 +139,7 @@ export default function AdminOverview() {
           {/* Pin Statistics */}
           <div className="citizen-v2-panel">
             <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-              Pin Statistics
+              Статистика по категориям
             </p>
             <div className="mt-3 space-y-2">
               {CAT_ITEMS.map((cat) => (
@@ -162,7 +162,7 @@ export default function AdminOverview() {
           {/* Response timeline */}
           <div className="citizen-v2-panel">
             <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-              Response Timeline
+              Динамика
             </p>
             <div className="mt-2" style={{ height: 120 }}>
               <ResponsiveContainer width="100%" height="100%">
@@ -198,29 +198,29 @@ export default function AdminOverview() {
         <StatMini
           icon={<ClipboardList size={18} />}
           value={stats?.totalReports ?? 0}
-          label="Total reports"
-          note="all time"
+          label="Всего заявок"
+          note="за всё время"
           tone="blue"
         />
         <StatMini
           icon={<Activity size={18} />}
           value={stats?.inProgress ?? 0}
-          label="In progress"
-          note="active clusters"
+          label="В работе"
+          note="активные точки"
           tone="amber"
         />
         <StatMini
           icon={<CircleCheck size={18} />}
           value={stats?.resolved ?? 0}
-          label="Resolved"
-          note="closed"
+          label="Закрыто"
+          note="завершено"
           tone="green"
         />
         <StatMini
           icon={<ShieldAlert size={18} />}
           value={`${stats?.aiAgreementRate ?? 0}%`}
-          label="AI accuracy"
-          note="verified by AI"
+          label="Точность AI"
+          note="автопроверка"
           tone="purple"
         />
       </div>
@@ -231,13 +231,13 @@ export default function AdminOverview() {
         <div>
           <div className="mb-2 flex items-center justify-between">
             <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-              Recent Reports
+              Последние заявки
             </p>
             <Link
               to="/admin/map"
               className="flex items-center gap-1 text-[11px] font-semibold text-teal-700"
             >
-              View all <ArrowRight size={11} />
+              Все <ArrowRight size={11} />
             </Link>
           </div>
           <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
@@ -259,7 +259,7 @@ export default function AdminOverview() {
                 />
               ) : (
                 <div className="flex h-28 items-center justify-center rounded-2xl bg-slate-50 text-xs text-slate-400">
-                  No photo
+                  Нет фото
                 </div>
               )}
               <div className="mt-3 flex items-center gap-1.5">
@@ -284,29 +284,29 @@ export default function AdminOverview() {
                   <p className="text-sm font-bold text-slate-900">
                     {selectedCluster.reportCount}
                   </p>
-                  <p className="text-[9px] text-slate-400">Reports</p>
+                  <p className="text-[9px] text-slate-400">Заявки</p>
                 </div>
                 <div className="rounded-xl bg-slate-50 px-2 py-2">
                   <p className="text-sm font-bold text-slate-900">
                     {Math.round(selectedCluster.priorityScore)}
                   </p>
-                  <p className="text-[9px] text-slate-400">Score</p>
+                  <p className="text-[9px] text-slate-400">Балл</p>
                 </div>
                 <div className="rounded-xl bg-slate-50 px-2 py-2">
                   <p className="text-sm font-bold text-slate-900">
                     {selectedCluster.priorityScore > 66
-                      ? "High"
+                      ? "Высокий"
                       : selectedCluster.priorityScore > 33
-                        ? "Med"
-                        : "Low"}
+                        ? "Средний"
+                        : "Низкий"}
                   </p>
-                  <p className="text-[9px] text-slate-400">Priority</p>
+                  <p className="text-[9px] text-slate-400">Приоритет</p>
                 </div>
               </div>
             </>
           ) : (
             <div className="flex h-32 items-center justify-center text-xs text-slate-400">
-              Select a pin on the map
+              Выберите точку на карте
             </div>
           )}
         </div>
@@ -316,23 +316,23 @@ export default function AdminOverview() {
       <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
         <ActionCard
           icon={<MapPin size={16} />}
-          label="New Report"
-          sub="Submit on behalf of citizen"
+          label="Новая заявка"
+          sub="Создать от имени жителя"
         />
         <ActionCard
           icon={<Users size={16} />}
-          label="Open Queue"
-          sub="AI flagged for review"
+          label="Очередь"
+          sub="Нужна проверка"
         />
         <ActionCard
           icon={<BarChart3 size={16} />}
-          label="Department Flow"
-          sub="Route to department"
+          label="Маршрут"
+          sub="Передать в службу"
         />
         <ActionCard
           icon={<ShieldAlert size={16} />}
-          label="Guard Report"
-          sub="Security & safety"
+          label="Тревога"
+          sub="Безопасность"
         />
       </div>
     </div>
@@ -388,12 +388,12 @@ function ReportCard({ report }: { report: ReportRecord }) {
         />
       ) : (
         <div className="flex h-24 items-center justify-center bg-slate-50 text-[10px] text-slate-400">
-          No photo
+          Нет фото
         </div>
       )}
       <div className="p-3">
         <p className="truncate text-xs font-bold text-slate-900">
-          {report.description || report.address || "No description"}
+          {report.description || report.address || "Без описания"}
         </p>
         <div className="mt-1 flex items-center gap-1 text-[10px] text-slate-500">
           <MapPin size={10} />

@@ -16,13 +16,12 @@ export default function AdminSettingsPage() {
   return (
     <div className="space-y-4">
       <header>
-        <p className="citizen-v2-eyebrow">Workspace controls</p>
+        <p className="citizen-v2-eyebrow">Настройки</p>
         <h1 className="text-2xl font-black tracking-[-0.04em] text-slate-950">
-          Settings
+          Настройки
         </h1>
         <p className="mt-1 max-w-2xl text-sm text-slate-500">
-          Review the current operator account, confirm integration health, and
-          keep the admin workspace aligned with the live city environment.
+          Аккаунт, интеграции и текущий режим работы.
         </p>
       </header>
 
@@ -30,19 +29,19 @@ export default function AdminSettingsPage() {
         <section className="citizen-v2-panel">
           <div className="flex items-center gap-3">
             <Shield size={20} className="text-emerald-700" />
-            <h2>Administrator account</h2>
+            <h2>Аккаунт оператора</h2>
           </div>
           <div className="mt-5 space-y-3 text-sm text-slate-600">
             <p>
-              <span className="font-semibold text-slate-900">Name:</span>{" "}
-              {user?.fullName ?? "Unknown"}
+              <span className="font-semibold text-slate-900">Имя:</span>{" "}
+              {user?.fullName ?? "Не указано"}
             </p>
             <p>
-              <span className="font-semibold text-slate-900">Email:</span>{" "}
-              {user?.email ?? "Unavailable"}
+              <span className="font-semibold text-slate-900">Почта:</span>{" "}
+              {user?.email ?? "Недоступно"}
             </p>
             <p>
-              <span className="font-semibold text-slate-900">Role:</span> Admin
+              <span className="font-semibold text-slate-900">Роль:</span> Администратор
             </p>
           </div>
           <button
@@ -51,26 +50,26 @@ export default function AdminSettingsPage() {
             className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
           >
             <LogOut size={16} />
-            Sign out
+            Выйти
           </button>
         </section>
 
         <section className="citizen-v2-panel">
           <div className="flex items-center gap-3">
             <Database size={20} className="text-sky-700" />
-            <h2>Integration health</h2>
+            <h2>Состояние интеграций</h2>
           </div>
           <div className="mt-5 space-y-3 text-sm text-slate-600">
             <p>
               <span className="font-semibold text-slate-900">Supabase:</span>{" "}
-              {isSupabaseConfigured() ? "Connected" : "Missing env vars"}
+              {isSupabaseConfigured() ? "Подключено" : "Нет env-переменных"}
             </p>
             <p>
               <span className="font-semibold text-slate-900">Mapbox:</span>{" "}
-              {isMapboxConfigured() ? "Configured" : "Fallback map mode"}
+              {isMapboxConfigured() ? "Настроено" : "Резервный режим карты"}
             </p>
             <p>
-              <span className="font-semibold text-slate-900">Default center:</span>{" "}
+              <span className="font-semibold text-slate-900">Центр карты:</span>{" "}
               {env.defaultLat}, {env.defaultLng}
             </p>
           </div>
@@ -79,19 +78,19 @@ export default function AdminSettingsPage() {
         <section className="citizen-v2-panel">
           <div className="flex items-center gap-3">
             <MapPin size={20} className="text-amber-700" />
-            <h2>Operational context</h2>
+            <h2>Рабочий контекст</h2>
           </div>
           <div className="mt-5 space-y-3 text-sm text-slate-600">
             <p>
-              <span className="font-semibold text-slate-900">City:</span> Aktau
+              <span className="font-semibold text-slate-900">Город:</span> Актау
             </p>
             <p>
-              <span className="font-semibold text-slate-900">Cluster radius:</span>{" "}
-              {env.clusterRadiusMeters} meters
+              <span className="font-semibold text-slate-900">Радиус кластера:</span>{" "}
+              {env.clusterRadiusMeters} м
             </p>
             <p>
-              <span className="font-semibold text-slate-900">Mode:</span>{" "}
-              Live civic operations
+              <span className="font-semibold text-slate-900">Режим:</span>{" "}
+              Рабочий
             </p>
           </div>
         </section>
@@ -99,25 +98,22 @@ export default function AdminSettingsPage() {
         <section className="citizen-v2-panel xl:col-span-2">
           <div className="flex items-center gap-3">
             <Bell size={20} className="text-violet-700" />
-            <h2>Alerting posture</h2>
+            <h2>Оповещения</h2>
           </div>
           <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-600">
-            This admin workspace is currently optimized for review-first
-            operations. AI classification is active, cluster prioritization is
-            live, and moderators can use the map, reports, and community views
-            to decide where manual intervention is still needed.
+            Панель показывает карту, заявки и аналитику. AI-классификация и
+            приоритизация включены, ручная проверка доступна в очереди.
           </p>
         </section>
 
         <section className="citizen-v2-panel">
           <div className="flex items-center gap-3">
             <Sparkles size={20} className="text-emerald-700" />
-            <h2>Product posture</h2>
+            <h2>О приложении</h2>
           </div>
           <p className="mt-5 text-sm leading-7 text-slate-600">
-            This Vite app now owns the deployable surface. Parked Next
-            experiments remain outside the production routes until they are
-            intentionally integrated.
+            Основной интерфейс работает на Vite. Дополнительные эксперименты не
+            участвуют в текущих маршрутах приложения.
           </p>
         </section>
       </div>

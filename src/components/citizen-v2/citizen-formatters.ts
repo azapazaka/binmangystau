@@ -1,14 +1,14 @@
 import type { ClusterRecord, ReportCategory } from "@/types";
 
 export const ISSUE_TITLES: Record<ReportCategory, string> = {
-  road: "Road Damage",
-  light: "Broken Street Light",
-  trash: "Overflowing Bin",
-  traffic: "Traffic Hazard",
-  other: "Community Report",
+  road: "Повреждение дороги",
+  light: "Не работает фонарь",
+  trash: "Переполненный контейнер",
+  traffic: "Опасный участок",
+  other: "Городская заявка",
 };
 
-const dateTimeFormatter = new Intl.DateTimeFormat("en-US", {
+const dateTimeFormatter = new Intl.DateTimeFormat("ru-RU", {
   month: "short",
   day: "numeric",
   hour: "2-digit",
@@ -18,7 +18,7 @@ const dateTimeFormatter = new Intl.DateTimeFormat("en-US", {
 });
 
 export function formatCitizenCount(value: number): string {
-  return new Intl.NumberFormat("en-US").format(value);
+  return new Intl.NumberFormat("ru-RU").format(value);
 }
 
 export function formatCitizenIssueTitle(category: ReportCategory): string {
@@ -34,44 +34,44 @@ export function formatCitizenIssueAddress(
 }
 
 export function formatCitizenIssueDistrict(district: string | null): string {
-  return district ?? "District unavailable";
+  return district ?? "Район не указан";
 }
 
 export function formatCitizenIssuePriority(priorityScore: number): string {
   if (priorityScore > 66) {
-    return "High priority";
+    return "Высокий";
   }
 
   if (priorityScore > 33) {
-    return "Medium priority";
+    return "Средний";
   }
 
-  return "Low priority";
+  return "Низкий";
 }
 
 export function formatCitizenIssueStatus(
   cluster: Pick<ClusterRecord, "status" | "moderatorReviewStatus">,
 ): string {
   if (cluster.status === "closed") {
-    return "Resolved";
+    return "Закрыто";
   }
 
   if (cluster.status === "in_progress") {
-    return "In progress";
+    return "В работе";
   }
 
   if (
     cluster.moderatorReviewStatus === "confirmed" ||
     cluster.moderatorReviewStatus === "corrected"
   ) {
-    return "Reviewed";
+    return "Проверено";
   }
 
-  return "Under review";
+  return "На проверке";
 }
 
 export function formatCitizenIssueDistance(reportCount: number): string {
-  return `${formatCitizenCount(reportCount)} report${reportCount === 1 ? "" : "s"} nearby`;
+  return `${formatCitizenCount(reportCount)} рядом`;
 }
 
 export function formatCitizenReportedAt(isoDate: string): string | undefined {

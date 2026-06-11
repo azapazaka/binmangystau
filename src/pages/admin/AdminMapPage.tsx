@@ -23,16 +23,16 @@ import { CATEGORY_META, STATUS_META } from "@/lib/constants";
 import type { ClusterRecord, ReportCategory, ReportRecord } from "@/types";
 
 const CATEGORIES = [
-  { key: "all",     label: "All"     },
-  { key: "road",    label: "Roads"   },
-  { key: "light",   label: "Lights"  },
-  { key: "trash",   label: "Trash"   },
-  { key: "traffic", label: "Traffic" },
-  { key: "other",   label: "Other"   },
+  { key: "all", label: "Все" },
+  { key: "road", label: "Дороги" },
+  { key: "light", label: "Освещение" },
+  { key: "trash", label: "Мусор" },
+  { key: "traffic", label: "Трафик" },
+  { key: "other", label: "Другое" },
 ];
 
 function buildTrendData() {
-  const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  const labels = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
   return labels.map((day) => ({
     day,
     reports: Math.floor(Math.random() * 18 + 4),
@@ -68,7 +68,7 @@ export default function AdminMapPage() {
       );
       setSelected((s) => (s ? { ...s, status } : null));
     } catch (error) {
-      console.error("Failed to update status:", error);
+      console.error("Не удалось обновить статус:", error);
     }
   };
 
@@ -89,9 +89,9 @@ export default function AdminMapPage() {
   return (
     <div className="space-y-3">
       <header>
-        <h1 className="text-lg font-bold text-slate-900">Explore Issues</h1>
+        <h1 className="text-lg font-bold text-slate-900">Карта обращений</h1>
         <p className="mt-0.5 text-xs text-slate-500">
-          Explore and manage all clusters across the city.
+          Карта кластеров и быстрый просмотр заявок.
         </p>
       </header>
 
@@ -102,7 +102,7 @@ export default function AdminMapPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search location"
+            placeholder="Поиск по локации"
             className="w-full bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400"
           />
         </label>
@@ -128,10 +128,10 @@ export default function AdminMapPage() {
           className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
         >
           <SlidersHorizontal size={12} />
-          Filters
+          Фильтры
         </button>
         <span className="ml-auto text-[11px] text-slate-400">
-          {clusters.length} clusters
+          {clusters.length} кластеров
         </span>
       </div>
 
@@ -156,13 +156,13 @@ export default function AdminMapPage() {
           <div className="citizen-v2-panel">
             <div className="flex items-center justify-between">
               <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-                Nearby Issues
+                Заявки рядом
               </p>
               <button
                 type="button"
                 className="flex items-center gap-1 text-[11px] font-semibold text-teal-700"
               >
-                View all reports <ArrowRight size={11} />
+                Все заявки <ArrowRight size={11} />
               </button>
             </div>
 
@@ -170,19 +170,19 @@ export default function AdminMapPage() {
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-100 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                    <th className="pb-2 pr-3">Photo</th>
-                    <th className="pb-2 pr-3">Description</th>
-                    <th className="pb-2 pr-3">Location</th>
-                    <th className="pb-2 pr-3">Date</th>
-                    <th className="pb-2 pr-3">Category</th>
-                    <th className="pb-2">Status</th>
+                    <th className="pb-2 pr-3">Фото</th>
+                    <th className="pb-2 pr-3">Описание</th>
+                    <th className="pb-2 pr-3">Локация</th>
+                    <th className="pb-2 pr-3">Дата</th>
+                    <th className="pb-2 pr-3">Категория</th>
+                    <th className="pb-2">Статус</th>
                   </tr>
                 </thead>
                 <tbody>
                   {nearbyReports.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="py-6 text-center text-slate-400">
-                        No reports found
+                        Заявки не найдены
                       </td>
                     </tr>
                   ) : (
@@ -207,7 +207,7 @@ export default function AdminMapPage() {
                             )}
                           </td>
                           <td className="max-w-[180px] truncate py-2 pr-3 font-medium text-slate-900">
-                            {r.description || "No description"}
+                            {r.description || "Без описания"}
                           </td>
                           <td className="py-2 pr-3 text-slate-500">
                             <div className="flex items-center gap-1">
@@ -278,28 +278,28 @@ export default function AdminMapPage() {
                   <p className="text-sm font-bold text-slate-900">
                     {selected.reportCount}
                   </p>
-                  <p className="text-[9px] text-slate-400">Reports</p>
+                  <p className="text-[9px] text-slate-400">Заявки</p>
                 </div>
                 <div className="rounded-xl bg-slate-50 p-2">
                   <p className="text-sm font-bold text-slate-900">
                     {Math.round(selected.priorityScore)}
                   </p>
-                  <p className="text-[9px] text-slate-400">Score</p>
+                  <p className="text-[9px] text-slate-400">Балл</p>
                 </div>
                 <div className="rounded-xl bg-slate-50 p-2">
                   <p className="text-sm font-bold text-slate-900">
                     {selected.priorityScore > 66
-                      ? "High"
+                      ? "Высокий"
                       : selected.priorityScore > 33
-                        ? "Med"
-                        : "Low"}
+                        ? "Средний"
+                        : "Низкий"}
                   </p>
-                  <p className="text-[9px] text-slate-400">Priority</p>
+                  <p className="text-[9px] text-slate-400">Приоритет</p>
                 </div>
               </div>
 
               <div className="mt-3">
-                <p className="text-[11px] font-semibold text-slate-500">Status</p>
+                <p className="text-[11px] font-semibold text-slate-500">Статус</p>
                 <div className="mt-1.5 flex gap-1.5">
                   {(["open", "in_progress", "closed"] as const).map((s) => {
                     const sm = STATUS_META[s];
@@ -323,7 +323,7 @@ export default function AdminMapPage() {
               </div>
 
               <p className="mt-3 text-[10px] text-slate-400">
-                Created:{" "}
+                Создано:{" "}
                 {format(new Date(selected.createdAt), "dd.MM.yyyy")}
               </p>
             </div>
@@ -331,10 +331,10 @@ export default function AdminMapPage() {
             {/* Trend chart */}
             <div className="citizen-v2-panel">
               <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-                Report Trend
+                Динамика
               </p>
               <p className="mt-1 text-[10px] text-slate-400">
-                Reports in this cluster over the past week
+                Заявки в этом кластере за неделю
               </p>
               <div className="mt-3" style={{ height: 120 }}>
                 <ResponsiveContainer width="100%" height="100%">
@@ -375,7 +375,7 @@ export default function AdminMapPage() {
             className="citizen-v2-panel flex items-center justify-center text-xs text-slate-400"
             style={{ minHeight: 200 }}
           >
-            Select a cluster on the map
+            Выберите кластер на карте
           </div>
         )}
       </div>

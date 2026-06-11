@@ -1,4 +1,5 @@
 import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 import {
   Bot,
   ClipboardList,
@@ -18,16 +19,16 @@ import { AI_STATUS_META, STATUS_META } from "@/lib/constants";
 import type { ClusterRecord, ReportRecord } from "@/types";
 
 const FILTERS = [
-  { key: "all", label: "All reports" },
-  { key: "open", label: "Open" },
-  { key: "in_progress", label: "In progress" },
-  { key: "closed", label: "Resolved" },
-  { key: "needs_review", label: "Needs review" },
+  { key: "all", label: "Все заявки" },
+  { key: "open", label: "Открыто" },
+  { key: "in_progress", label: "В работе" },
+  { key: "closed", label: "Закрыто" },
+  { key: "needs_review", label: "Нужна проверка" },
 ] as const;
 
 function formatReporter(reporterId: string | null) {
-  if (!reporterId) return "Unknown citizen";
-  return `Citizen ${reporterId.slice(0, 6).toUpperCase()}`;
+  if (!reporterId) return "Неизвестный житель";
+  return `Житель ${reporterId.slice(0, 6).toUpperCase()}`;
 }
 
 export default function AdminReportsPage() {
@@ -55,7 +56,7 @@ export default function AdminReportsPage() {
         setError(
           nextError instanceof Error
             ? nextError.message
-            : "Unable to load reports right now.",
+            : "Не удалось загрузить заявки.",
         );
       })
       .finally(() => {
@@ -111,27 +112,27 @@ export default function AdminReportsPage() {
 
     return [
       {
-        label: "Total reports",
+        label: "Всего заявок",
         value: total,
-        note: "Live submissions in the system",
+        note: "обращения в системе",
         icon: <ClipboardList size={18} />,
       },
       {
-        label: "Needs moderation",
+        label: "Нужна модерация",
         value: pendingReview,
-        note: "AI or human review still pending",
+        note: "ожидают решения",
         icon: <MessageSquareWarning size={18} />,
       },
       {
-        label: "AI verified",
+        label: "Проверено AI",
         value: verified,
-        note: "High-confidence valid reports",
+        note: "высокая уверенность",
         icon: <ShieldCheck size={18} />,
       },
       {
-        label: "Community disputes",
+        label: "Спорные случаи",
         value: disputed,
-        note: "Reports with split public votes",
+        note: "мнения жителей расходятся",
         icon: <Users size={18} />,
       },
     ];
@@ -141,13 +142,12 @@ export default function AdminReportsPage() {
     <div className="space-y-4">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="citizen-v2-eyebrow">Operations queue</p>
+          <p className="citizen-v2-eyebrow">Очередь</p>
           <h1 className="text-2xl font-black tracking-[-0.04em] text-slate-950">
-            Reports
+            Заявки
           </h1>
           <p className="mt-1 max-w-2xl text-sm text-slate-500">
-            Review every submission flowing into CityPulse, trace where it
-            lands, and spot the items that still need a human decision.
+            Все обращения в одном списке.
           </p>
         </div>
         <label className="flex min-w-[260px] flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm xl:max-w-sm xl:flex-none">
@@ -155,7 +155,7 @@ export default function AdminReportsPage() {
           <input
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search description, place, or citizen"
+            placeholder="Поиск по описанию, месту или жителю"
             className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
           />
         </label>
@@ -208,21 +208,21 @@ export default function AdminReportsPage() {
           <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
             <div>
               <p className="text-sm font-bold text-slate-900">
-                Live report stream
+                Поток заявок
               </p>
               <p className="text-xs text-slate-500">
-                {filteredReports.length} reports match the current view
+                {filteredReports.length} в текущем списке
               </p>
             </div>
             <div className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-semibold text-slate-500">
-              Synced from Supabase
+              Данные из Supabase
             </div>
           </div>
 
           {loading ? (
             <div className="flex min-h-72 items-center justify-center text-sm text-slate-500">
               <LoaderCircle className="mr-2 animate-spin" size={16} />
-              Loading report queue...
+              Загрузка заявок...
             </div>
           ) : error ? (
             <div className="m-5 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
@@ -231,10 +231,10 @@ export default function AdminReportsPage() {
           ) : filteredReports.length === 0 ? (
             <div className="m-5 rounded-[24px] border border-dashed border-slate-200 bg-slate-50/80 px-5 py-12 text-center">
               <p className="text-sm font-semibold text-slate-900">
-                No reports match this filter
+                Ничего не найдено
               </p>
               <p className="mt-1 text-sm text-slate-500">
-                Try another status or clear the search query.
+                Измените фильтр или очистите поиск.
               </p>
             </div>
           ) : (
@@ -260,12 +260,12 @@ export default function AdminReportsPage() {
                     {report.photoUrl ? (
                       <img
                         src={report.photoUrl}
-                        alt={report.description || "Report photo"}
+                        alt={report.description || "Фото заявки"}
                         className="h-20 w-full rounded-2xl object-cover"
                       />
                     ) : (
                       <div className="flex h-20 items-center justify-center rounded-2xl bg-slate-100 text-xs font-semibold text-slate-400">
-                        No photo
+                        Нет фото
                       </div>
                     )}
 
@@ -284,35 +284,35 @@ export default function AdminReportsPage() {
                         </span>
                       </div>
                       <p className="mt-2 line-clamp-2 text-sm font-semibold text-slate-950">
-                        {report.description || "No description provided"}
+                        {report.description || "Описание не добавлено"}
                       </p>
                       <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
                         <span className="inline-flex items-center gap-1">
                           <MapPin size={12} />
-                          {report.address ?? report.district ?? "Location missing"}
+                          {report.address ?? report.district ?? "Локация не указана"}
                         </span>
                         <span>{formatReporter(report.submittedBy)}</span>
                         <span>
-                          {format(new Date(report.createdAt), "dd MMM, HH:mm")}
+                          {format(new Date(report.createdAt), "dd MMM, HH:mm", { locale: ru })}
                         </span>
                       </div>
                     </div>
 
                     <div className="text-sm text-slate-600">
                       <p className="font-semibold text-slate-900">
-                        {cluster ? `Cluster ${cluster.id.slice(0, 6)}` : "Unclustered"}
+                        {cluster ? `Кластер ${cluster.id.slice(0, 6)}` : "Без кластера"}
                       </p>
                       <p className="mt-1 text-xs leading-5 text-slate-500">
-                        Priority {Math.round(report.priorityScore)} ·{" "}
+                        Приоритет {Math.round(report.priorityScore)} ·{" "}
                         {report.aiConfidence
-                          ? `${Math.round(report.aiConfidence * 100)}% confidence`
-                          : "No confidence score"}
+                          ? `${Math.round(report.aiConfidence * 100)}% уверенность`
+                          : "Нет оценки"}
                       </p>
                     </div>
 
                     <div className="text-sm text-slate-600">
                       <p className="font-semibold text-slate-900">
-                        {report.humanVotesTotal} community votes
+                        {report.humanVotesTotal} голосов
                       </p>
                       <p className="mt-1 text-xs leading-5 text-slate-500">
                         {report.humanConfirmationStatus.replace(/_/g, " ")}
@@ -327,30 +327,30 @@ export default function AdminReportsPage() {
 
         <aside className="space-y-4">
           <section className="citizen-v2-panel">
-            <p className="citizen-v2-eyebrow">Selected report</p>
+            <p className="citizen-v2-eyebrow">Выбрано</p>
             {selectedReport ? (
               <>
                 <div className="mt-1 flex items-center gap-2">
                   <CategoryBadge category={selectedReport.userCategory} />
                   <span className="text-xs font-semibold text-slate-500">
                     {selectedReport.clusterId
-                      ? `Cluster ${selectedReport.clusterId.slice(0, 6)}`
-                      : "Awaiting cluster assignment"}
+                      ? `Кластер ${selectedReport.clusterId.slice(0, 6)}`
+                      : "Кластер не назначен"}
                   </span>
                 </div>
                 <p className="mt-3 text-lg font-bold leading-7 text-slate-950">
-                  {selectedReport.description || "No description provided"}
+                  {selectedReport.description || "Описание не добавлено"}
                 </p>
                 <p className="mt-3 text-sm leading-7 text-slate-500">
                   {selectedReport.reviewNote ??
                     selectedReport.aiReason ??
-                    "No manual note yet. This report is still following the default AI and moderation flow."}
+                    "Комментарий пока не добавлен."}
                 </p>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl bg-slate-50 p-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      AI status
+                      Статус AI
                     </p>
                     <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
                       <Bot size={14} className="text-emerald-700" />
@@ -359,24 +359,24 @@ export default function AdminReportsPage() {
                   </div>
                   <div className="rounded-2xl bg-slate-50 p-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Confidence
+                      Уверенность
                     </p>
                     <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-slate-900">
                       <Sparkles size={14} className="text-amber-600" />
                       {selectedReport.aiConfidence
                         ? `${Math.round(selectedReport.aiConfidence * 100)}%`
-                        : "Unavailable"}
+                        : "Недоступно"}
                     </p>
                   </div>
                 </div>
 
                 <div className="mt-5 space-y-2">
                   <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                    Top AI factors
+                    Факторы AI
                   </p>
                   {selectedReport.topFactors.length === 0 ? (
                     <p className="text-sm text-slate-500">
-                      No factor breakdown was saved for this report.
+                      Для этой заявки нет разбивки факторов.
                     </p>
                   ) : (
                     selectedReport.topFactors.slice(0, 4).map((factor) => (
@@ -402,8 +402,7 @@ export default function AdminReportsPage() {
               </>
             ) : (
               <p className="text-sm text-slate-500">
-                Select a report from the queue to inspect its status, signals,
-                and public feedback.
+                Выберите заявку, чтобы посмотреть статус и сигналы.
               </p>
             )}
           </section>

@@ -15,37 +15,37 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCitizenMyReports } from "@/hooks/useCitizenMyReports";
 
 const FILTERS = [
-  "All",
-  "Open",
-  "In Progress",
-  "Under Review",
-  "Resolved",
+  "Все",
+  "Открыто",
+  "В работе",
+  "На проверке",
+  "Закрыто",
 ] as const;
 
 function buildTimeline(issueTitle: string | null): CitizenTimelineItem[] {
   return [
     {
-      title: "Submitted",
-      at: "Initial report captured",
-      note: `${issueTitle ?? "Issue"} was submitted by the citizen.`,
+      title: "Отправлено",
+      at: "Заявка создана",
+      note: `${issueTitle ?? "Обращение"} отправлено пользователем.`,
       status: "complete",
     },
     {
-      title: "AI Verified",
-      at: "Verification in progress",
-      note: "AI review and clustering are being applied.",
+      title: "Проверка",
+      at: "Идет разбор",
+      note: "Система проводит проверку и объединение похожих случаев.",
       status: "complete",
     },
     {
-      title: "Assigned",
-      at: "Waiting for department handoff",
-      note: "Assignment details will appear once available.",
+      title: "Назначено",
+      at: "Ожидает передачи",
+      note: "Детали появятся после назначения исполнителя.",
       status: "current",
     },
     {
-      title: "Resolved",
-      at: "Pending",
-      note: "The citizen will see closure here when the issue is completed.",
+      title: "Закрыто",
+      at: "Ожидается",
+      note: "После завершения работы здесь появится финальный статус.",
       status: "upcoming",
     },
   ];
@@ -102,8 +102,8 @@ export default function CitizenMyReportsPage() {
 
   return (
     <CitizenShell
-      title="My Reports"
-      subtitle="Track the status and progress of the issues you reported in real time."
+      title="Мои заявки"
+      subtitle="Следите за статусом и движением своих обращений."
     >
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
         {/* Left column */}
@@ -112,21 +112,21 @@ export default function CitizenMyReportsPage() {
           <section className="grid gap-4 md:grid-cols-3">
             <CitizenMetricCard
               icon={<FileStack size={22} />}
-              label={stats[0]?.label ?? "Total reports"}
+              label={stats[0]?.label ?? "Всего заявок"}
               value={stats[0]?.value ?? "0"}
               note={stats[0]?.note ?? ""}
               tone="teal"
             />
             <CitizenMetricCard
               icon={<CalendarDays size={22} />}
-              label={stats[1]?.label ?? "Active reports"}
+              label={stats[1]?.label ?? "Активные"}
               value={stats[1]?.value ?? "0"}
               note={stats[1]?.note ?? ""}
               tone="amber"
             />
             <CitizenMetricCard
               icon={<CircleCheck size={22} />}
-              label={stats[2]?.label ?? "Resolved reports"}
+              label={stats[2]?.label ?? "Закрытые"}
               value={stats[2]?.value ?? "0"}
               note={stats[2]?.note ?? ""}
               tone="green"
@@ -145,19 +145,19 @@ export default function CitizenMyReportsPage() {
                 type="button"
                 className="rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-medium text-slate-700"
               >
-                Newest first
+                Сначала новые
               </button>
             </div>
             <div className="mt-4 space-y-2.5">
               {loading ? (
                 <p className="text-sm text-slate-500">
-                  Loading your live reports...
+                  Загрузка заявок...
                 </p>
               ) : error ? (
                 <p className="text-sm text-rose-700">{error}</p>
               ) : issues.length === 0 ? (
                 <p className="text-sm text-slate-500">
-                  You do not have any live reports yet.
+                  У вас пока нет заявок.
                 </p>
               ) : (
                 issues.map((issue) => (
@@ -197,10 +197,10 @@ export default function CitizenMyReportsPage() {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-                  Progress
+                  Ход работы
                 </p>
                 <h2 className="mt-1 text-sm font-bold text-slate-900">
-                  Report timeline
+                  Лента статуса
                 </h2>
               </div>
             </div>

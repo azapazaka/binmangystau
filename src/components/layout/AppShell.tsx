@@ -16,13 +16,13 @@ import { useAuth } from '@/contexts/AuthContext'
 import { CityPulseLogo } from '@/components/icons'
 
 const ADMIN_NAV = [
-  { label: 'Overview',  href: '/admin',           icon: LayoutDashboard },
-  { label: 'Reports',   href: '/admin/reports',    icon: ClipboardList   },
-  { label: 'Map',       href: '/admin/map',        icon: Map             },
-  { label: 'Waste',     href: '/admin/waste',      icon: Recycle         },
-  { label: 'Analytics', href: '/admin/analytics',  icon: BarChart3       },
-  { label: 'Community', href: '/admin/community',  icon: Users           },
-  { label: 'Settings',  href: '/admin/settings',   icon: Settings        },
+  { label: 'Обзор', href: '/admin', icon: LayoutDashboard },
+  { label: 'Обращения', href: '/admin/reports', icon: ClipboardList },
+  { label: 'Карта', href: '/admin/map', icon: Map },
+  { label: 'Контейнеры', href: '/admin/waste', icon: Recycle },
+  { label: 'Аналитика', href: '/admin/analytics', icon: BarChart3 },
+  { label: 'Сообщество', href: '/admin/community', icon: Users },
+  { label: 'Настройки', href: '/admin/settings', icon: Settings },
 ]
 
 function AdminSidebar() {
@@ -32,7 +32,7 @@ function AdminSidebar() {
         <CityPulseLogo size={34} />
         <div>
           <p className="citizen-v2-brand-title">CityPulse</p>
-          <p className="citizen-v2-brand-city">Admin</p>
+          <p className="citizen-v2-brand-city">Оператор</p>
         </div>
       </div>
 
@@ -56,9 +56,9 @@ function AdminSidebar() {
       </nav>
 
       <div className="citizen-v2-sidebar-card">
-        <p className="citizen-v2-sidebar-card-title">Stronger city. Together.</p>
+        <p className="citizen-v2-sidebar-card-title">Городской контур</p>
         <p className="citizen-v2-sidebar-card-body">
-          Manage reports, track response times, and keep Aktau running smoothly.
+          Обращения, карта, контейнеры и аналитика в одном рабочем окне.
         </p>
       </div>
     </aside>
@@ -67,22 +67,22 @@ function AdminSidebar() {
 
 function AdminTopbar() {
   const { user, signOut } = useAuth()
-  const name = user?.fullName?.trim() || 'Admin'
+  const name = user?.fullName?.trim() || 'Оператор'
 
   return (
     <div className="citizen-v2-topbar">
       <div className="flex items-center gap-2">
         <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
-          All districts
+          Все районы
           <ChevronDown size={12} className="text-slate-400" />
         </div>
         <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
-          All categories
+          Все категории
           <ChevronDown size={12} className="text-slate-400" />
         </div>
       </div>
       <div className="citizen-v2-topbar-actions">
-        <button type="button" className="citizen-v2-icon-button" style={{ width: 38, height: 38 }} aria-label="Notifications">
+        <button type="button" className="citizen-v2-icon-button" style={{ width: 38, height: 38 }} aria-label="Уведомления">
           <Bell size={16} />
           <span className="citizen-v2-notification-dot" aria-hidden="true" />
         </button>
@@ -92,17 +92,17 @@ function AdminTopbar() {
           </span>
           <span className="citizen-v2-profile-copy">
             <span className="citizen-v2-profile-name" style={{ fontSize: '0.82rem' }}>{name}</span>
-            <span className="citizen-v2-profile-role" style={{ fontSize: '0.72rem' }}>Administrator</span>
+            <span className="citizen-v2-profile-role" style={{ fontSize: '0.72rem' }}>Администратор</span>
           </span>
         </button>
         <button
           type="button"
           onClick={signOut}
           className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-          aria-label="Sign out"
+          aria-label="Выйти"
         >
           <LogOut size={14} />
-          Sign out
+          Выйти
         </button>
       </div>
     </div>

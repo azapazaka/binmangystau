@@ -64,7 +64,7 @@ export function CityMap({
       } catch (e) {
         if (!cancelled) {
           console.error("Leaflet init failed:", e);
-          setError("Map could not be loaded");
+          setError("Карта не загрузилась");
         }
       }
     })();

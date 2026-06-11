@@ -20,8 +20,7 @@ export default function LoginPage() {
   const { signIn } = useAuth();
   const nav = useNavigate();
   const location = useLocation();
-  const from = (location.state as { from?: { pathname: string } })?.from
-    ?.pathname;
+  const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
@@ -31,37 +30,37 @@ export default function LoginPage() {
 
   const roleMeta = isAdmin
     ? {
-        eyebrow: "City operations",
-        title: "Step into the control room",
+        eyebrow: "Операторская панель",
+        title: "Рабочий вход в систему",
         subtitle:
-          "Review clusters, coordinate response, and keep the signal clean before backlog becomes public reality.",
-        badge: "Admin access",
+          "Очередь обращений, карта, аналитика и городской мониторинг в одном интерфейсе.",
+        badge: "Доступ оператора",
         icon: <LayoutDashboard size={18} />,
         accent: "from-emerald-500 via-teal-500 to-sky-500",
         surface: "from-emerald-50 via-white to-sky-50",
         switchHref: "/login/citizen",
-        switchLabel: "Sign in as citizen",
+        switchLabel: "Войти как житель",
         highlights: [
-          "Live issue map with cluster priorities",
-          "Report moderation and AI review queue",
-          "Community pulse and response analytics",
+          "Карта обращений и контейнеров",
+          "Очередь проверки и модерации",
+          "Сводка по отклику и активности",
         ],
       }
     : {
-        eyebrow: "Citizen portal",
-        title: "Report issues without losing momentum",
+        eyebrow: "Личный кабинет",
+        title: "Сообщайте о проблемах быстро",
         subtitle:
-          "Submit a problem, follow the response, and help verify what is really happening around Aktau.",
-        badge: "Citizen access",
+          "Отправляйте обращения, следите за статусом и помогайте подтверждать важные сигналы по Актау.",
+        badge: "Доступ жителя",
         icon: <Users size={18} />,
         accent: "from-amber-400 via-emerald-400 to-teal-500",
         surface: "from-amber-50 via-white to-emerald-50",
         switchHref: "/login/admin",
-        switchLabel: "Sign in as admin",
+        switchLabel: "Войти как оператор",
         highlights: [
-          "Fast report capture with map context",
-          "Personal activity, verification, and status tracking",
-          "Shared civic signal powered by Supabase data",
+          "Быстрая отправка обращения с адресом",
+          "Мои заявки и текущие статусы",
+          "Проверка городских сигналов",
         ],
       };
 
@@ -101,7 +100,7 @@ export default function LoginPage() {
               <CityPulseLogo size={34} />
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.22em] text-slate-400">
-                  City platform
+                  Городская платформа
                 </p>
                 <p className="text-lg font-black tracking-[-0.03em] text-slate-950">
                   {APP_NAME}
@@ -143,12 +142,9 @@ export default function LoginPage() {
               <div className="rounded-[28px] border border-slate-200/80 bg-white/86 p-5 shadow-[0_24px_55px_-42px_rgba(15,23,42,0.45)]">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-bold text-slate-900">
-                      Demo access
-                    </p>
+                    <p className="text-sm font-bold text-slate-900">Демо-доступ</p>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      Use the built-in demo account to inspect the full Vite app
-                      without creating a new user first.
+                      Используйте встроенный demo-аккаунт, чтобы сразу открыть приложение.
                     </p>
                   </div>
                   <Sparkles size={18} className="mt-1 text-amber-500" />
@@ -156,7 +152,7 @@ export default function LoginPage() {
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl bg-slate-50 px-4 py-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Email
+                      Почта
                     </p>
                     <p className="mt-1 text-sm font-semibold text-slate-900">
                       {DEMO_ACCOUNTS[role as "citizen" | "admin"].email}
@@ -164,7 +160,7 @@ export default function LoginPage() {
                   </div>
                   <div className="rounded-2xl bg-slate-50 px-4 py-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Password
+                      Пароль
                     </p>
                     <p className="mt-1 text-sm font-semibold text-slate-900">
                       {DEMO_ACCOUNTS[role as "citizen" | "admin"].password}
@@ -188,7 +184,7 @@ export default function LoginPage() {
                     : "text-slate-500 hover:text-slate-900",
                 ].join(" ")}
               >
-                Citizen
+                Житель
               </Link>
               <Link
                 to="/login/admin"
@@ -199,28 +195,27 @@ export default function LoginPage() {
                     : "text-slate-500 hover:text-slate-900",
                 ].join(" ")}
               >
-                Admin
+                Оператор
               </Link>
             </div>
 
             <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_26px_70px_-42px_rgba(15,23,42,0.35)] sm:p-8">
               <div className="mb-6">
                 <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-400">
-                  Secure sign in
+                  Безопасный вход
                 </p>
                 <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-                  Continue to {APP_NAME}
+                  Вход в {APP_NAME}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Use your live Supabase credentials or preload the demo account
-                  for this role.
+                  Используйте рабочий аккаунт или подставьте demo-данные для этой роли.
                 </p>
               </div>
 
               <form onSubmit={submit} className="flex flex-col gap-4">
                 <div>
                   <label className="mb-1.5 block text-[13px] font-semibold text-slate-700">
-                    Email
+                    Почта
                   </label>
                   <input
                     type="email"
@@ -233,7 +228,7 @@ export default function LoginPage() {
                 </div>
                 <div>
                   <label className="mb-1.5 block text-[13px] font-semibold text-slate-700">
-                    Password
+                    Пароль
                   </label>
                   <div className="relative">
                     <input
@@ -241,7 +236,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
                       required
-                      placeholder="Enter your password"
+                      placeholder="Введите пароль"
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 pr-11 text-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
                     />
                     <button
@@ -265,7 +260,7 @@ export default function LoginPage() {
                   disabled={loading}
                   className="btn-primary mt-1 w-full rounded-2xl py-3.5 text-sm font-bold"
                 >
-                  {loading ? "Signing in..." : "Sign in"}
+                  {loading ? "Входим..." : "Войти"}
                 </button>
               </form>
 
@@ -274,7 +269,7 @@ export default function LoginPage() {
                   onClick={fill}
                   className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                 >
-                  Use demo account
+                  Подставить demo-аккаунт
                 </button>
                 <Link
                   to={roleMeta.switchHref}
@@ -292,12 +287,10 @@ export default function LoginPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-900">
-                      Aktau live workspace
+                      Рабочее пространство Актау
                     </p>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      This session connects to the same Vite production app used
-                      for reports, analytics, waste operations, and community
-                      review.
+                      Один интерфейс для обращений, карты, логистики и городского мониторинга.
                     </p>
                   </div>
                 </div>

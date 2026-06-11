@@ -4,14 +4,14 @@ import { buildCitizenOverviewIssues } from "@/components/citizen-v2/citizen-adap
 import { listClusters, listReports } from "@/lib/api";
 import type { CitizenOverviewIssue } from "@/components/citizen-v2/citizen-adapters";
 
-type FilterValue = "All" | "Open" | "In Progress" | "Under Review" | "Resolved";
+type FilterValue = "Все" | "Открыто" | "В работе" | "На проверке" | "Закрыто";
 
 export function useCitizenMyReports(userId: string | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [issues, setIssues] = useState<CitizenOverviewIssue[]>([]);
   const [selectedIssueId, setSelectedIssueId] = useState<string | null>(null);
-  const [filter, setFilter] = useState<FilterValue>("All");
+  const [filter, setFilter] = useState<FilterValue>("Все");
 
   useEffect(() => {
     if (!userId) {
@@ -37,7 +37,7 @@ export function useCitizenMyReports(userId: string | null) {
       })
       .catch((nextError: unknown) => {
         if (!active) return;
-        setError(nextError instanceof Error ? nextError.message : "Failed to load reports.");
+        setError(nextError instanceof Error ? nextError.message : "Не удалось загрузить заявки.");
         setLoading(false);
       });
 
@@ -47,11 +47,11 @@ export function useCitizenMyReports(userId: string | null) {
   }, [userId]);
 
   const filteredIssues = useMemo(() => {
-    if (filter === "All") return issues;
-    if (filter === "Open") return issues.filter((issue) => issue.statusLabel === "Under review");
-    if (filter === "In Progress") return issues.filter((issue) => issue.statusLabel === "In progress");
-    if (filter === "Under Review") return issues.filter((issue) => issue.statusLabel === "Reviewed");
-    return issues.filter((issue) => issue.statusLabel === "Resolved");
+    if (filter === "Все") return issues;
+    if (filter === "Открыто") return issues.filter((issue) => issue.statusLabel === "На проверке");
+    if (filter === "В работе") return issues.filter((issue) => issue.statusLabel === "В работе");
+    if (filter === "На проверке") return issues.filter((issue) => issue.statusLabel === "Проверено");
+    return issues.filter((issue) => issue.statusLabel === "Закрыто");
   }, [filter, issues]);
 
   const selectedIssue =
@@ -67,16 +67,16 @@ export function useCitizenMyReports(userId: string | null) {
     selectedIssueId,
     setSelectedIssueId,
     stats: [
-      { label: "Total reports", value: String(issues.length), note: "all submissions" },
+      { label: "Всего заявок", value: String(issues.length), note: "все обращения" },
       {
-        label: "Active reports",
-        value: String(issues.filter((issue) => issue.statusLabel !== "Resolved").length),
-        note: "open or in progress",
+        label: "Активные",
+        value: String(issues.filter((issue) => issue.statusLabel !== "Закрыто").length),
+        note: "открытые и в работе",
       },
       {
-        label: "Resolved reports",
-        value: String(issues.filter((issue) => issue.statusLabel === "Resolved").length),
-        note: "finished",
+        label: "Закрытые",
+        value: String(issues.filter((issue) => issue.statusLabel === "Закрыто").length),
+        note: "завершено",
       },
     ],
   };

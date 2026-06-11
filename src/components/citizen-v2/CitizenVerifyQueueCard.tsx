@@ -22,7 +22,7 @@ export function CitizenVerifyQueueCard({
   const confidence = report.aiConfidence
     ? Math.round(report.aiConfidence * 100)
     : null;
-  const confidenceLabel = confidence !== null ? `${confidence}%` : "Unknown";
+  const confidenceLabel = confidence !== null ? `${confidence}%` : "Нет данных";
 
   const totalVotes = report.humanVotesTotal;
   const realPct =
@@ -35,14 +35,14 @@ export function CitizenVerifyQueueCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-[11px] font-medium text-slate-400">
-            Report #{report.id.slice(0, 8)}
+            Заявка #{report.id.slice(0, 8)}
           </p>
           <h2 className="mt-2 text-2xl font-black leading-tight tracking-[-0.03em] text-slate-950">
-            Is this a real city issue?
+            Это реальная городская проблема?
           </h2>
         </div>
         <CitizenStatusBadge
-          label={`Submitted ${new Date(report.createdAt).toLocaleDateString()}`}
+          label={`Отправлено ${new Date(report.createdAt).toLocaleDateString("ru-RU")}`}
           tone="success"
         />
       </div>
@@ -59,7 +59,7 @@ export function CitizenVerifyQueueCard({
             />
           ) : (
             <div className="flex h-[300px] items-center justify-center rounded-[20px] bg-slate-100 text-sm font-medium text-slate-400">
-              No photo available
+              Нет фото
             </div>
           )}
         </div>
@@ -67,7 +67,7 @@ export function CitizenVerifyQueueCard({
         {/* AI detected panel */}
         <div className="rounded-[20px] bg-gradient-to-b from-emerald-50/80 to-slate-50/80 p-5">
           <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-700">
-            AI Detected
+            AI-анализ
           </p>
           <div className="mt-3 flex items-center gap-3">
             <span
@@ -79,7 +79,7 @@ export function CitizenVerifyQueueCard({
             </p>
           </div>
           <p className="mt-2 text-sm text-slate-600">
-            Confidence {confidenceLabel}
+            Точность {confidenceLabel}
           </p>
 
           {/* Confidence bar */}
@@ -102,7 +102,7 @@ export function CitizenVerifyQueueCard({
                   `${report.lat.toFixed(4)}, ${report.lng.toFixed(4)}`}
               </p>
               <p className="text-xs text-slate-500">
-                {report.district ?? "District unavailable"}
+                {report.district ?? "Район не указан"}
               </p>
             </div>
           </div>
@@ -110,7 +110,7 @@ export function CitizenVerifyQueueCard({
           {/* Description */}
           <p className="mt-4 text-sm leading-6 text-slate-600">
             {report.description ||
-              "No extra description provided for this report."}
+              "Описание не добавлено."}
           </p>
 
           {/* AI tags */}
@@ -138,9 +138,9 @@ export function CitizenVerifyQueueCard({
           className="rounded-[20px] border border-emerald-200 bg-emerald-50 px-5 py-4 text-left transition hover:border-emerald-400 disabled:opacity-50"
         >
           <ThumbsUp size={20} className="text-emerald-700" />
-          <p className="mt-2 text-sm font-bold text-emerald-900">Real issue</p>
+          <p className="mt-2 text-sm font-bold text-emerald-900">Да, проблема есть</p>
           <p className="mt-1 text-xs text-emerald-700/80">
-            Needs city attention
+            Нужна реакция служб
           </p>
         </button>
         <button
@@ -150,9 +150,9 @@ export function CitizenVerifyQueueCard({
           className="rounded-[20px] border border-amber-200 bg-amber-50 px-5 py-4 text-left transition hover:border-amber-400 disabled:opacity-50"
         >
           <AlertTriangle size={20} className="text-amber-700" />
-          <p className="mt-2 text-sm font-bold text-amber-900">Irrelevant</p>
+          <p className="mt-2 text-sm font-bold text-amber-900">Не по теме</p>
           <p className="mt-1 text-xs text-amber-700/80">
-            Not a real city concern
+            Не относится к городской проблеме
           </p>
         </button>
         <button
@@ -162,9 +162,9 @@ export function CitizenVerifyQueueCard({
           className="rounded-[20px] border border-rose-200 bg-rose-50 px-5 py-4 text-left transition hover:border-rose-400 disabled:opacity-50"
         >
           <ThumbsDown size={20} className="text-rose-700" />
-          <p className="mt-2 text-sm font-bold text-rose-900">Fake</p>
+          <p className="mt-2 text-sm font-bold text-rose-900">Фейк</p>
           <p className="mt-1 text-xs text-rose-700/80">
-            Spam or fabricated report
+            Спам или ложная заявка
           </p>
         </button>
       </div>
@@ -173,10 +173,10 @@ export function CitizenVerifyQueueCard({
       <div className="mt-5 rounded-[20px] border border-slate-200 bg-white p-4">
         <div className="flex items-center justify-between">
           <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-            Community Consensus
+            Мнение жителей
           </p>
           <span className="text-[11px] text-slate-400">
-            {totalVotes} vote{totalVotes !== 1 ? "s" : ""} so far
+            {totalVotes} голосов
           </span>
         </div>
 
@@ -195,13 +195,13 @@ export function CitizenVerifyQueueCard({
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
             <span className="font-medium text-slate-700">
-              Real {realPct}%
+              Реально {realPct}%
             </span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-rose-400" />
             <span className="font-medium text-slate-700">
-              Fake/Irrelevant {fakePct}%
+              Фейк / не по теме {fakePct}%
             </span>
           </div>
         </div>

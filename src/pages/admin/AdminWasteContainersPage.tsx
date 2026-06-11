@@ -50,8 +50,8 @@ type BinRecord = {
 const SEED_BINS: BinRecord[] = [
   {
     id: "bin-0001",
-    label: "Container #8052",
-    district: "3 microdistrict",
+    label: "Контейнер #8052",
+    district: "3 мкр",
     lat: 43.6485,
     lng: 51.1580,
     wasteType: "mixed",
@@ -65,8 +65,8 @@ const SEED_BINS: BinRecord[] = [
   },
   {
     id: "bin-0002",
-    label: "Container #8107",
-    district: "5 microdistrict",
+    label: "Контейнер #8107",
+    district: "5 мкр",
     lat: 43.6390,
     lng: 51.1430,
     wasteType: "plastic",
@@ -80,8 +80,8 @@ const SEED_BINS: BinRecord[] = [
   },
   {
     id: "bin-0003",
-    label: "Container #8230",
-    district: "14 microdistrict",
+    label: "Контейнер #8230",
+    district: "14 мкр",
     lat: 43.6550,
     lng: 51.1750,
     wasteType: "metal",
@@ -95,8 +95,8 @@ const SEED_BINS: BinRecord[] = [
   },
   {
     id: "bin-0004",
-    label: "Container #8341",
-    district: "Central",
+    label: "Контейнер #8341",
+    district: "Центр",
     lat: 43.6420,
     lng: 51.1650,
     wasteType: "mixed",
@@ -117,25 +117,25 @@ const STATUS_CONFIG: Record<
   { label: string; bg: string; text: string; dot: string }
 > = {
   normal: {
-    label: "Online",
+    label: "Норма",
     bg: "bg-emerald-50",
     text: "text-emerald-700",
     dot: "#22c55e",
   },
   warning: {
-    label: "Warning",
+    label: "Заполняется",
     bg: "bg-amber-50",
     text: "text-amber-700",
     dot: "#f59e0b",
   },
   full: {
-    label: "Full",
+    label: "Переполнен",
     bg: "bg-red-50",
     text: "text-red-700",
     dot: "#ef4444",
   },
   fire: {
-    label: "Fire",
+    label: "Пожар",
     bg: "bg-red-100",
     text: "text-red-800",
     dot: "#dc2626",
@@ -147,7 +147,7 @@ const STATUS_CONFIG: Record<
     dot: "#e11d48",
   },
   offline: {
-    label: "Offline",
+    label: "Оффлайн",
     bg: "bg-slate-100",
     text: "text-slate-600",
     dot: "#94a3b8",
@@ -158,9 +158,9 @@ const WASTE_TYPE_META: Record<
   SmartBinWasteType,
   { label: string; color: string }
 > = {
-  plastic: { label: "Plastic", color: "#3b82f6" },
-  metal: { label: "Metal", color: "#f59e0b" },
-  mixed: { label: "Mixed", color: "#22c55e" },
+  plastic: { label: "Пластик", color: "#3b82f6" },
+  metal: { label: "Металл", color: "#f59e0b" },
+  mixed: { label: "Смешанные", color: "#22c55e" },
 };
 
 /* ── Component ──────────────────────────────────────────────── */
@@ -241,7 +241,7 @@ export default function AdminWasteContainersPage() {
         .sort((a, b) => b.collectedToday - a.collectedToday)
         .slice(0, 6)
         .map((b) => ({
-          name: b.label.replace("Container #", "#"),
+          name: b.label.replace("Контейнер #", "#"),
           collections: b.collectedToday,
         })),
     [bins],
@@ -271,26 +271,25 @@ export default function AdminWasteContainersPage() {
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-lg font-bold text-slate-900">
-            Smart Waste Containers
+            Умные контейнеры
           </h1>
           <p className="mt-0.5 text-xs text-slate-500">
-            Durable, efficient waste containers for recycling infrastructure
-            across your city.
+            Сеть контейнеров и текущее состояние по точкам.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
-            All statuses
+            Все статусы
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
               className="bg-transparent text-xs outline-none"
             >
-              <option value="all">All statuses</option>
-              <option value="normal">Online</option>
-              <option value="warning">Warning</option>
-              <option value="full">Full</option>
-              <option value="offline">Offline</option>
+              <option value="all">Все статусы</option>
+              <option value="normal">Норма</option>
+              <option value="warning">Заполняется</option>
+              <option value="full">Переполнен</option>
+              <option value="offline">Оффлайн</option>
             </select>
           </div>
           <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600">
@@ -299,7 +298,7 @@ export default function AdminWasteContainersPage() {
               onChange={(e) => setDistrictFilter(e.target.value)}
               className="bg-transparent text-xs outline-none"
             >
-              <option value="all">All districts</option>
+              <option value="all">Все районы</option>
               {[...new Set(SEED_BINS.map((b) => b.district))].map((d) => (
                 <option key={d} value={d}>
                   {d}
@@ -386,7 +385,7 @@ export default function AdminWasteContainersPage() {
                   <span className="text-xl font-black text-slate-900">
                     {selectedBin.fillLevel}%
                   </span>
-                  <span className="text-[9px] text-slate-400">Fill level</span>
+                  <span className="text-[9px] text-slate-400">Заполненность</span>
                 </div>
               </div>
             </div>
@@ -397,13 +396,13 @@ export default function AdminWasteContainersPage() {
                 <p className="text-xs font-bold text-slate-900">
                   {selectedBin.temperature}°C
                 </p>
-                <p className="text-[9px] text-slate-400">Temp</p>
+                <p className="text-[9px] text-slate-400">Темп.</p>
               </div>
               <div className="rounded-xl bg-slate-50 p-2">
                 <p className="text-xs font-bold text-slate-900">
                   {selectedBin.collectedToday}
                 </p>
-                <p className="text-[9px] text-slate-400">Collected</p>
+                <p className="text-[9px] text-slate-400">Собрано</p>
               </div>
             </div>
 
@@ -412,12 +411,12 @@ export default function AdminWasteContainersPage() {
               className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-2.5 text-xs font-semibold text-white"
             >
               <Truck size={14} />
-              Schedule Pickup
+              Назначить вывоз
             </button>
           </div>
         ) : (
           <div className="citizen-v2-panel flex items-center justify-center text-xs text-slate-400" style={{ minHeight: 200 }}>
-            Select a container on the map
+            Выберите контейнер на карте
           </div>
         )}
       </div>
@@ -427,37 +426,37 @@ export default function AdminWasteContainersPage() {
         <MiniStat
           icon={<Box size={16} />}
           value={stats.total}
-          label="Total containers"
+          label="Всего контейнеров"
           tone="blue"
         />
         <MiniStat
           icon={<Wifi size={16} />}
           value={stats.online}
-          label="Online"
+          label="Норма"
           tone="green"
         />
         <MiniStat
           icon={<Battery size={16} />}
           value={`${stats.avgFill}%`}
-          label="Avg. fill level"
+          label="Средняя заполненность"
           tone="teal"
         />
         <MiniStat
           icon={<AlertTriangle size={16} />}
           value={stats.alerts}
-          label="Alerts"
+          label="Тревоги"
           tone="red"
         />
         <MiniStat
           icon={<Truck size={16} />}
           value={stats.collections}
-          label="Collections today"
+          label="Вывозов сегодня"
           tone="amber"
         />
         <MiniStat
           icon={<CheckCircle2 size={16} />}
           value={stats.warnings}
-          label="Warnings"
+          label="Предупреждения"
           tone="purple"
         />
       </div>
@@ -467,10 +466,10 @@ export default function AdminWasteContainersPage() {
         {/* Fill level heatmap (mini map) */}
         <div className="citizen-v2-panel">
           <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-            Fill Level Coverage
+            Покрытие по карте
           </p>
           <p className="mt-1 text-[10px] text-slate-400">
-            Container density across districts
+            Контейнеры по районам
           </p>
           <div className="mt-3 overflow-hidden rounded-xl">
             <CityMap
@@ -484,10 +483,10 @@ export default function AdminWasteContainersPage() {
         {/* Waste types donut */}
         <div className="citizen-v2-panel">
           <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-            Waste Types Collected
+            Типы отходов
           </p>
           <p className="mt-1 text-[10px] text-slate-400">
-            Distribution by container type
+            Распределение по типам
           </p>
           <div className="mt-2 flex items-center gap-4">
             <div style={{ width: 130, height: 130 }}>
@@ -537,10 +536,10 @@ export default function AdminWasteContainersPage() {
         {/* Most visited containers */}
         <div className="citizen-v2-panel">
           <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-            Most Active Containers
+            Активные контейнеры
           </p>
           <p className="mt-1 text-[10px] text-slate-400">
-            By collections today
+            По вывозу за сегодня
           </p>
           <div className="mt-2" style={{ height: 140 }}>
             <ResponsiveContainer width="100%" height="100%">
@@ -578,10 +577,10 @@ export default function AdminWasteContainersPage() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-              Container Fleet
+              Список контейнеров
             </p>
             <p className="mt-0.5 text-[10px] text-slate-400">
-              Showing {filteredBins.length} of {bins.length} containers
+              Показано {filteredBins.length} из {bins.length}
             </p>
           </div>
           <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-1.5">
@@ -589,7 +588,7 @@ export default function AdminWasteContainersPage() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search containers..."
+              placeholder="Поиск контейнеров..."
               className="w-32 bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400"
             />
           </label>
@@ -599,14 +598,14 @@ export default function AdminWasteContainersPage() {
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-slate-100 text-[10px] font-semibold uppercase tracking-wider text-slate-400">
-                <th className="pb-2 pr-3">Container</th>
-                <th className="pb-2 pr-3">Location</th>
-                <th className="pb-2 pr-3">Status</th>
-                <th className="pb-2 pr-3">Fill Level</th>
-                <th className="pb-2 pr-3">Collected Today</th>
-                <th className="pb-2 pr-3">Temperature</th>
-                <th className="pb-2 pr-3">Alerts</th>
-                <th className="pb-2">Tags</th>
+                <th className="pb-2 pr-3">Контейнер</th>
+                <th className="pb-2 pr-3">Локация</th>
+                <th className="pb-2 pr-3">Статус</th>
+                <th className="pb-2 pr-3">Заполненность</th>
+                <th className="pb-2 pr-3">Собрано сегодня</th>
+                <th className="pb-2 pr-3">Температура</th>
+                <th className="pb-2 pr-3">Тревоги</th>
+                <th className="pb-2">Теги</th>
               </tr>
             </thead>
             <tbody>

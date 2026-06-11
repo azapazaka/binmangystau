@@ -23,20 +23,20 @@ function LandingNav() {
         <Link to="/" className="flex items-center gap-3 text-slate-900">
           <CityPulseLogo size={28} />
           <div>
-            <p className="text-sm font-extrabold tracking-[0.18em] text-slate-500 uppercase">City portal</p>
+            <p className="text-sm font-extrabold tracking-[0.18em] text-slate-500 uppercase">Городская платформа</p>
             <p className="text-base font-extrabold leading-none">{APP_NAME}</p>
           </div>
         </Link>
 
         <nav className="hidden items-center gap-7 text-sm font-medium text-slate-500 md:flex">
           <a href="#about" className="transition-colors hover:text-slate-900">
-            About
+            О проекте
           </a>
           <a href="#how" className="transition-colors hover:text-slate-900">
-            How it works
+            Как это работает
           </a>
           <a href="#features" className="transition-colors hover:text-slate-900">
-            Features
+            Возможности
           </a>
         </nav>
 
@@ -44,7 +44,7 @@ function LandingNav() {
           to="/login/citizen"
           className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-700"
         >
-          Sign in
+          Войти
         </Link>
       </div>
     </header>
@@ -79,17 +79,16 @@ function HeroSection() {
           <div className="mb-6 flex items-center gap-3">
             <CityPulseLogo size={48} />
             <p className="text-[11px] font-extrabold uppercase tracking-[0.38em] text-green-700">
-              Stronger city. Together.
+              Быстрее для города
             </p>
           </div>
           <h1 className="text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-5xl lg:text-6xl">
-            Report city issues.
+            Сообщайте о проблемах.
             <br />
-            Help <span className="text-green-600">Aktau</span> respond faster.
+            Помогайте <span className="text-green-600">Актау</span> реагировать быстрее.
           </h1>
           <p className="mt-6 max-w-lg text-base leading-7 text-slate-600 sm:text-lg">
-            Citizens submit issues in seconds. AI validates, clusters, and prioritizes the signal.
-            City teams coordinate the response before the backlog becomes the story.
+            Жители отправляют обращения за минуты. Система проверяет сигнал, группирует похожие случаи и помогает службам быстрее брать их в работу.
           </p>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-2">
@@ -102,9 +101,9 @@ function HeroSection() {
                   <Users size={20} />
                 </div>
                 <div>
-                  <p className="text-base font-bold text-slate-900">Sign in as citizen</p>
+                  <p className="text-base font-bold text-slate-900">Вход для жителя</p>
                   <p className="mt-1 text-sm leading-6 text-slate-500">
-                    Report a problem, add context, and follow the response.
+                    Отправить заявку, добавить детали и следить за статусом.
                   </p>
                 </div>
               </div>
@@ -119,9 +118,9 @@ function HeroSection() {
                   <LayoutDashboard size={20} />
                 </div>
                 <div>
-                  <p className="text-base font-bold">Sign in as admin</p>
+                  <p className="text-base font-bold">Вход для оператора</p>
                   <p className="mt-1 text-sm leading-6 text-green-100">
-                    Open the operations view, investigate clusters, and assign work.
+                    Смотреть очередь, карту, аналитику и маршруты.
                   </p>
                 </div>
               </div>
@@ -131,34 +130,33 @@ function HeroSection() {
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-500">
             <Link to="/citizen/report" className="inline-flex items-center gap-2 transition-colors hover:text-green-700">
               <ChevronRight size={14} />
-              Go to the citizen report form
+              Перейти к форме обращения
             </Link>
             <Link to="/admin" className="inline-flex items-center gap-2 transition-colors hover:text-green-700">
               <ChevronRight size={14} />
-              Open the admin panel
+              Открыть админ-панель
             </Link>
           </div>
         </div>
 
-        {/* Hero right — city illustration */}
         <div className="relative hidden lg:block">
           <div className="absolute -left-8 top-12 h-40 w-40 rounded-full bg-cyan-200/45 blur-3xl" />
           <div className="absolute -right-10 bottom-12 h-48 w-48 rounded-full bg-green-200/45 blur-3xl" />
 
           <img
             src="/hero-smartcity.png"
-            alt="Smart city with recycling infrastructure"
+            alt="Умный город и инфраструктура переработки"
             className="relative w-full rounded-[28px] border border-white/70 shadow-[0_35px_90px_-40px_rgba(15,23,42,0.35)]"
           />
 
           <div className="absolute -left-10 bottom-8 rounded-2xl border border-white/80 bg-white/92 px-4 py-3 shadow-[0_24px_60px_-36px_rgba(15,23,42,0.55)]">
-            <p className="text-sm font-black text-green-700">+12 new reports</p>
-            <p className="mt-1 text-xs text-slate-500">captured in the last 24 hours</p>
+            <p className="text-sm font-black text-green-700">+12 новых заявок</p>
+            <p className="mt-1 text-xs text-slate-500">за последние 24 часа</p>
           </div>
 
           <div className="absolute -right-8 top-12 rounded-2xl bg-slate-950 px-4 py-3 text-white shadow-[0_24px_60px_-36px_rgba(15,23,42,0.8)]">
-            <p className="text-sm font-black">AI verified</p>
-            <p className="mt-1 text-xs text-slate-300">noise filtered before dispatch</p>
+            <p className="text-sm font-black">Проверено системой</p>
+            <p className="mt-1 text-xs text-slate-300">лишний шум отсеивается до передачи службам</p>
           </div>
         </div>
       </div>
@@ -170,22 +168,22 @@ function HowItWorksSection() {
   const steps = [
     {
       number: "01",
-      title: "Citizens report",
-      description: "A resident adds a photo, location, and a short explanation directly from the report flow.",
+      title: "Житель отправляет",
+      description: "Пользователь добавляет фото, адрес и короткое описание проблемы.",
       icon: <ReportIcon size={32} />,
       tone: "bg-green-50 border-green-100",
     },
     {
       number: "02",
-      title: "AI prioritizes",
-      description: "The system validates the signal, detects duplicates, and ranks urgency before staff see it.",
+      title: "Система проверяет",
+      description: "Сигнал проходит валидацию, дубликаты группируются, приоритет считается автоматически.",
       icon: <ShieldIcon size={32} />,
       tone: "bg-amber-50 border-amber-100",
     },
     {
       number: "03",
-      title: "City teams respond",
-      description: "Administrators review the cluster, coordinate the handoff, and close the loop for the citizen.",
+      title: "Службы реагируют",
+      description: "Оператор видит кластер, передает задачу и закрывает цикл по обращению.",
       icon: <Building2 size={24} className="text-sky-500" />,
       tone: "bg-sky-50 border-sky-100",
     },
@@ -195,12 +193,12 @@ function HowItWorksSection() {
     <section id="how" className="bg-white py-24">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mx-auto max-w-2xl text-center">
-          <p className="text-[11px] font-extrabold uppercase tracking-[0.38em] text-green-700">Process</p>
+          <p className="text-[11px] font-extrabold uppercase tracking-[0.38em] text-green-700">Процесс</p>
           <h2 className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-950 sm:text-4xl">
-            How CityPulse works
+            Как работает CityPulse
           </h2>
           <p className="mt-4 text-base leading-7 text-slate-500">
-            A simple public flow on the surface, with structured triage and operations logic behind it.
+            Простая схема для жителя и понятный рабочий контур для городских служб.
           </p>
         </div>
 
@@ -235,11 +233,11 @@ function HowItWorksSection() {
 
 function FeaturesStrip() {
   const features = [
-    { icon: <Eye size={18} />, title: "Transparency", description: "Every step is visible to both sides." },
-    { icon: <Shield size={18} />, title: "Verified", description: "Moderation and AI reduce bad signal." },
-    { icon: <Cpu size={18} />, title: "AI assistant", description: "Automatic clustering and urgency scoring." },
-    { icon: <MapPin size={18} />, title: "Made for Aktau", description: "Built around local response flows." },
-    { icon: <Sparkles size={18} />, title: "Shared momentum", description: "Citizens and teams improve the city together." },
+    { icon: <Eye size={18} />, title: "Прозрачно", description: "Статус и движение заявки видны по шагам." },
+    { icon: <Shield size={18} />, title: "Проверено", description: "Модерация и автоматическая проверка снижают шум." },
+    { icon: <Cpu size={18} />, title: "Авторазбор", description: "Похожие обращения объединяются и сортируются по важности." },
+    { icon: <MapPin size={18} />, title: "Под Актау", description: "Интерфейс заточен под реальные городские сценарии." },
+    { icon: <Sparkles size={18} />, title: "Общий сигнал", description: "Жители и службы работают в одной системе." },
   ];
 
   return (
@@ -271,13 +269,13 @@ function CityScapeBanner() {
     <section className="relative overflow-hidden">
       <img
         src="/hero-cityscape.png"
-        alt="Aktau cityscape with mountains and greenery"
+        alt="Городской пейзаж Актау"
         className="h-48 w-full object-cover sm:h-56"
       />
       <div className="absolute inset-0 bg-gradient-to-t from-white/90 via-white/30 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 px-4 pb-6 text-center sm:px-6">
-        <p className="text-lg font-bold text-slate-900">Building a smarter, greener Aktau</p>
-        <p className="mt-1 text-sm text-slate-600">Together with citizens, AI, and city teams</p>
+        <p className="text-lg font-bold text-slate-900">Городской мониторинг в одном окне</p>
+        <p className="mt-1 text-sm text-slate-600">Жители, обращения, карта и городские службы</p>
       </div>
     </section>
   );
@@ -291,16 +289,16 @@ function LandingFooter() {
           <CityPulseLogo size={24} />
           <div>
             <p className="text-sm font-bold text-slate-900">{APP_NAME}</p>
-            <p className="text-xs text-slate-500">Stronger city. Together.</p>
+            <p className="text-xs text-slate-500">Сервис обращений и мониторинга</p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-5 text-sm text-slate-500">
           <Link to="/login/citizen" className="transition-colors hover:text-green-700">
-            Citizen login
+            Вход жителя
           </Link>
           <Link to="/login/admin" className="transition-colors hover:text-green-700">
-            Admin login
+            Вход оператора
           </Link>
         </div>
       </div>

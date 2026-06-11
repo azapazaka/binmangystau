@@ -13,15 +13,15 @@ export default function CitizenVerifyPage() {
 
   return (
     <CitizenShell
-      title="Verification Queue"
-      subtitle="Citizens like you help validate reports and keep Aktau better for everyone."
+      title="Очередь проверки"
+      subtitle="Жители помогают подтверждать обращения и снижать шум в системе."
     >
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_300px]">
         {/* Main content */}
         <div className="space-y-5">
           {loading ? (
             <div className="citizen-v2-panel text-sm text-slate-500">
-              Loading verification queue...
+              Загрузка очереди...
             </div>
           ) : error ? (
             <div className="citizen-v2-panel text-sm text-rose-700">
@@ -35,7 +35,7 @@ export default function CitizenVerifyPage() {
             />
           ) : (
             <div className="citizen-v2-panel flex h-64 items-center justify-center text-sm text-slate-500">
-              No reports currently need verification. Check back later.
+              Сейчас нет заявок для проверки.
             </div>
           )}
         </div>
@@ -50,7 +50,7 @@ export default function CitizenVerifyPage() {
               </div>
               <div>
                 <p className="text-xs font-semibold text-slate-500">
-                  Your civic impact
+                  Ваш вклад
                 </p>
                 <p className="text-2xl font-black tracking-[-0.04em] text-slate-950">
                   {civicImpact.score}
@@ -62,7 +62,7 @@ export default function CitizenVerifyPage() {
               <div className="rounded-[18px] bg-slate-50 p-3">
                 <div className="flex items-center gap-2 text-slate-700">
                   <ThumbsUp size={16} />
-                  <span className="text-xs font-medium">Helpful votes</span>
+                  <span className="text-xs font-medium">Полезные голоса</span>
                 </div>
                 <p className="mt-1.5 text-xl font-bold text-slate-950">
                   {civicImpact.helpfulVotes}
@@ -71,7 +71,7 @@ export default function CitizenVerifyPage() {
               <div className="rounded-[18px] bg-slate-50 p-3">
                 <div className="flex items-center gap-2 text-slate-700">
                   <Award size={16} />
-                  <span className="text-xs font-medium">Verified today</span>
+                  <span className="text-xs font-medium">Проверено сегодня</span>
                 </div>
                 <p className="mt-1.5 text-xl font-bold text-slate-950">
                   {civicImpact.verifiedToday}
@@ -83,16 +83,16 @@ export default function CitizenVerifyPage() {
           {/* Next in queue */}
           <article className="citizen-v2-panel">
             <p className="text-[11px] font-bold uppercase tracking-wider text-teal-700">
-              Next in queue
+              Дальше в очереди
             </p>
             <h2 className="mt-1 text-sm font-bold text-slate-900">
-              Upcoming reports
+              Следующие заявки
             </h2>
 
             <div className="mt-4 space-y-2.5">
               {next.length === 0 ? (
                 <p className="text-xs text-slate-500">
-                  No additional reports waiting right now.
+                  Дополнительных заявок сейчас нет.
                 </p>
               ) : (
                 next.map((report) => (
@@ -108,7 +108,7 @@ export default function CitizenVerifyPage() {
                       />
                     ) : (
                       <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-slate-100 text-[10px] font-semibold text-slate-400">
-                        No photo
+                        Нет фото
                       </div>
                     )}
                     <div className="min-w-0 flex-1">
@@ -118,7 +118,7 @@ export default function CitizenVerifyPage() {
                       <p className="mt-0.5 truncate text-[11px] text-slate-500">
                         {report.address ??
                           report.district ??
-                          "Location unavailable"}
+                          "Локация не указана"}
                       </p>
                       <div className="mt-1.5 flex items-center gap-1.5">
                         <CategoryBadge

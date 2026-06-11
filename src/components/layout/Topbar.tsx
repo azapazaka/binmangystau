@@ -11,17 +11,17 @@ export function Topbar({ title }: { title: string }) {
         <h1 className="text-[15px] font-semibold text-slate-900">{title}</h1>
       </div>
       <div className="flex items-center gap-3">
-        <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-500">
+        <button className="relative p-2 rounded-lg hover:bg-slate-100 text-slate-500" aria-label="Уведомления">
           <Bell size={18} />
         </button>
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 text-sm font-semibold">
-            {user?.fullName?.[0]?.toUpperCase() ?? 'U'}
+            {user?.fullName?.[0]?.toUpperCase() ?? 'П'}
           </div>
           <div className="hidden sm:block">
             <p className="text-[13px] font-semibold text-slate-900 leading-none">{user?.fullName}</p>
             <p className="text-[11px] text-slate-400 mt-0.5 leading-none">
-              {user?.role === 'admin' ? 'City Administrator' : 'Citizen'}
+              {user?.role === 'admin' ? 'Администратор' : 'Житель'}
             </p>
           </div>
         </div>

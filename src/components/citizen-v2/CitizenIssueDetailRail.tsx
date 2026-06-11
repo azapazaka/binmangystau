@@ -6,8 +6,8 @@ import { CitizenStatusBadge } from "@/components/citizen-v2/CitizenStatusBadge";
 
 export function CitizenIssueDetailRail({
   issue,
-  emptyTitle = "No issue selected",
-  emptyBody = "Select a live issue from the map or list to inspect its details.",
+  emptyTitle = "Точка не выбрана",
+  emptyBody = "Выберите точку на карте или в списке.",
   primaryAction,
 }: {
   issue: CitizenOverviewIssue | null;
@@ -39,7 +39,7 @@ export function CitizenIssueDetailRail({
         />
       ) : (
         <div className="mt-3 flex h-32 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-50/60 via-slate-50 to-emerald-50/60 text-xs font-medium text-slate-400">
-          No photo available yet
+          Фото пока нет
         </div>
       )}
 
@@ -59,11 +59,11 @@ export function CitizenIssueDetailRail({
       <div className="mt-3 space-y-2 border-t border-slate-100 pt-3 text-xs">
         <div className="flex items-center gap-2">
           <CircleCheck size={13} className="flex-shrink-0 text-slate-400" />
-          <span className="font-medium text-slate-900">{issue.reporterLabel ?? "Community signal"}</span>
+          <span className="font-medium text-slate-900">{issue.reporterLabel ?? "Сигнал от жителя"}</span>
         </div>
         <div className="flex items-center gap-2">
           <CalendarClock size={13} className="flex-shrink-0 text-slate-400" />
-          <span className="text-slate-500">Latest activity: {issue.reportedAtLabel ?? "—"}</span>
+          <span className="text-slate-500">Последняя активность: {issue.reportedAtLabel ?? "—"}</span>
         </div>
       </div>
 

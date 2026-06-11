@@ -62,24 +62,24 @@ export function buildCitizenOverviewStats(
 
   return [
     {
-      label: "Active nearby",
+      label: "Активно рядом",
       value: formatCitizenCount(activeNearby),
-      note: "within 2 km",
+      note: "в радиусе 2 км",
     },
     {
-      label: "Solved this week",
+      label: "Решено за неделю",
       value: formatCitizenCount(solvedThisWeek),
-      note: "citywide",
+      note: "по городу",
     },
     {
-      label: "Needs verification",
+      label: "Нужна проверка",
       value: formatCitizenCount(needsVerification),
-      note: "help us confirm",
+      note: "помогите подтвердить",
     },
     {
-      label: "Total reports",
+      label: "Всего заявок",
       value: formatCitizenCount(reports.length),
-      note: "all time",
+      note: "за всё время",
     },
   ];
 }
@@ -98,9 +98,9 @@ export function buildCitizenOverviewIssues(
     imageUrl: cluster.representativePhotoUrl ?? "",
     category: cluster.category,
     description: cluster.priorityReason ?? undefined,
-    reporterLabel: `${formatCitizenCount(cluster.reportCount)} linked ${cluster.reportCount === 1 ? "report" : "reports"}`,
+    reporterLabel: `${formatCitizenCount(cluster.reportCount)} связанных заявок`,
     reportedAtLabel: formatCitizenReportedAt(cluster.createdAt),
-    notesTitle: cluster.topFactors.length > 0 ? "Priority drivers" : undefined,
+    notesTitle: cluster.topFactors.length > 0 ? "Факторы приоритета" : undefined,
     noteSummary:
       cluster.topFactors.length > 0
         ? cluster.topFactors.map((factor) => factor.label).join(", ")

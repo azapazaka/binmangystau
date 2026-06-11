@@ -14,13 +14,13 @@ import { citizenCopy } from "@/components/citizen-v2/citizen-copy";
 import { CityPulseLogo } from "@/components/icons";
 
 const navIcons: Record<string, ComponentType<{ size?: number }>> = {
-  Home,
-  Map,
-  "New Report": FilePlus2,
-  "My Reports": Files,
-  Notify: Bell,
-  Profile: UserCircle,
-  Settings,
+  "Главная": Home,
+  "Карта": Map,
+  "Новая заявка": FilePlus2,
+  "Мои заявки": Files,
+  "Проверка": Bell,
+  "Профиль": UserCircle,
+  "Настройки": Settings,
 };
 
 export function CitizenSidebar() {
@@ -34,7 +34,7 @@ export function CitizenSidebar() {
         </div>
       </div>
 
-      <nav aria-label="Citizen navigation" className="citizen-v2-nav">
+      <nav aria-label="Навигация жителя" className="citizen-v2-nav">
         {citizenCopy.nav.map((item) => {
           const Icon = navIcons[item.label];
 
@@ -55,9 +55,9 @@ export function CitizenSidebar() {
       </nav>
 
       <div className="citizen-v2-sidebar-card">
-        <p className="citizen-v2-sidebar-card-title">Together, we build a better Aktau.</p>
+        <p className="citizen-v2-sidebar-card-title">Город становится лучше по шагам.</p>
         <p className="citizen-v2-sidebar-card-body">
-          Report local issues, track progress, and help verify what matters in your area.
+          Отправляйте заявки, следите за статусом и помогайте подтверждать важные сигналы.
         </p>
       </div>
     </aside>

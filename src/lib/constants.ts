@@ -8,31 +8,31 @@ export const CATEGORY_META: Record<
   { label: string; color: string; bgClass: string; textClass: string }
 > = {
   road: {
-    label: "Roads",
+    label: "Дороги",
     color: "#ef4444",
     bgClass: "bg-red-100",
     textClass: "text-red-700",
   },
   light: {
-    label: "Lights",
+    label: "Освещение",
     color: "#f59e0b",
     bgClass: "bg-amber-100",
     textClass: "text-amber-700",
   },
   trash: {
-    label: "Trash",
+    label: "Мусор",
     color: "#22c55e",
     bgClass: "bg-green-100",
     textClass: "text-green-700",
   },
   traffic: {
-    label: "Traffic",
+    label: "Трафик",
     color: "#3b82f6",
     bgClass: "bg-blue-100",
     textClass: "text-blue-700",
   },
   other: {
-    label: "Other",
+    label: "Другое",
     color: "#94a3b8",
     bgClass: "bg-slate-100",
     textClass: "text-slate-600",
@@ -44,17 +44,17 @@ export const STATUS_META: Record<
   { label: string; bgClass: string; textClass: string }
 > = {
   open: {
-    label: "Open",
+    label: "Открыто",
     bgClass: "bg-red-100",
     textClass: "text-red-700",
   },
   in_progress: {
-    label: "In progress",
+    label: "В работе",
     bgClass: "bg-amber-100",
     textClass: "text-amber-700",
   },
   closed: {
-    label: "Resolved",
+    label: "Закрыто",
     bgClass: "bg-green-100",
     textClass: "text-green-700",
   },
@@ -65,22 +65,22 @@ export const AI_STATUS_META: Record<
   { label: string; bgClass: string; textClass: string }
 > = {
   valid: {
-    label: "Verified",
+    label: "Подтверждено",
     bgClass: "bg-green-100",
     textClass: "text-green-700",
   },
   invalid: {
-    label: "Rejected",
+    label: "Отклонено",
     bgClass: "bg-red-100",
     textClass: "text-red-700",
   },
   uncertain: {
-    label: "Needs review",
+    label: "Нужна проверка",
     bgClass: "bg-amber-100",
     textClass: "text-amber-700",
   },
   unavailable: {
-    label: "Unavailable",
+    label: "Недоступно",
     bgClass: "bg-slate-100",
     textClass: "text-slate-600",
   },

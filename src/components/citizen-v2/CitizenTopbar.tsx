@@ -6,8 +6,8 @@ import { useAuth } from "@/contexts/AuthContext";
 
 export function CitizenTopbar({ action }: { action?: ReactNode }) {
   const { user } = useAuth();
-  const profileName = user?.fullName?.trim() || "Citizen";
-  const profileRole = user?.role === "admin" ? "City Administrator" : "Citizen";
+  const profileName = user?.fullName?.trim() || "Житель";
+  const profileRole = user?.role === "admin" ? "Администратор" : "Житель";
 
   return (
     <div className="citizen-v2-topbar">
@@ -16,7 +16,7 @@ export function CitizenTopbar({ action }: { action?: ReactNode }) {
         <button
           type="button"
           className="citizen-v2-icon-button"
-          aria-label="Notifications"
+          aria-label="Уведомления"
         >
           <Bell size={18} />
           <span className="citizen-v2-notification-dot" aria-hidden="true" />
