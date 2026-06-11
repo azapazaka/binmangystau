@@ -109,4 +109,36 @@ export function buildCitizenOverviewIssues(
   }));
 }
 
+export function buildCitizenMyReportIssues(
+  reports: ReportRecord[],
+): CitizenOverviewIssue[] {
+  return reports.map((report) => {
+    let statusLabel = "На проверке";
+    if (report.status === "closed") statusLabel = "Закрыто";
+    else if (report.status === "in_progress") statusLabel = "В работе";
+    else if (
+      report.reviewStatus === "confirmed" ||
+      report.reviewStatus === "corrected"
+    )
+      statusLabel = "Проверено";
+
+    return {
+      id: report.id,
+      title: formatCitizenIssueTitle(report.userCategory),
+      address: formatCitizenIssueAddress(report.address, report.lat, report.lng),
+      district: formatCitizenIssueDistrict(report.district),
+      statusLabel,
+      priorityLabel: formatCitizenIssuePriority(report.priorityScore),
+      distanceLabel: "1 рядом",
+      imageUrl: report.photoUrl ?? "",
+      category: report.userCategory,
+      description: report.description || undefined,
+      reporterLabel: "Моя заявка",
+      reportedAtLabel: formatCitizenReportedAt(report.createdAt),
+      notesTitle: report.aiReason ? "AI-анализ" : undefined,
+      noteSummary: report.aiReason ?? undefined,
+    };
+  });
+}
+
 export { ISSUE_TITLES };

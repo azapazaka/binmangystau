@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 
-import { buildCitizenOverviewIssues } from "@/components/citizen-v2/citizen-adapters";
-import { listClusters, listReports } from "@/lib/api";
+import { buildCitizenMyReportIssues } from "@/components/citizen-v2/citizen-adapters";
+import { listReports } from "@/lib/api";
 import type { CitizenOverviewIssue } from "@/components/citizen-v2/citizen-adapters";
 
 type FilterValue = "Все" | "Открыто" | "В работе" | "На проверке" | "Закрыто";
@@ -23,13 +23,10 @@ export function useCitizenMyReports(userId: string | null) {
     let active = true;
     setLoading(true);
 
-    Promise.all([listReports({ submittedBy: userId }), listClusters({ category: "all" })])
-      .then(([reports, clusters]) => {
+    listReports({ submittedBy: userId })
+      .then((reports) => {
         if (!active) return;
-        const clusterIds = new Set(reports.map((report) => report.clusterId).filter(Boolean));
-        const nextIssues = buildCitizenOverviewIssues(
-          clusters.filter((cluster) => clusterIds.has(cluster.id)),
-        );
+        const nextIssues = buildCitizenMyReportIssues(reports);
         setIssues(nextIssues);
         setSelectedIssueId(nextIssues[0]?.id ?? null);
         setError(null);
