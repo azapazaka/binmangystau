@@ -17,55 +17,63 @@ import { APP_NAME, DEMO_ACCOUNTS } from "@/lib/constants";
 
 export default function LoginPage() {
   const { role = "citizen" } = useParams<{ role: "citizen" | "admin" }>();
-  const { signIn } = useAuth();
+  const { signIn, registerCitizen } = useAuth();
   const nav = useNavigate();
   const location = useLocation();
   const from = (location.state as { from?: { pathname: string } })?.from?.pathname;
+  const [mode, setMode] = useState<"sign_in" | "register">("sign_in");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const isAdmin = role === "admin";
+  const isRegisterMode = !isAdmin && mode === "register";
 
   const roleMeta = isAdmin
     ? {
-        eyebrow: "Операторская панель",
-        title: "Рабочий вход в систему",
+        eyebrow: "City operations",
+        title: "Step into the control room",
         subtitle:
-          "Очередь обращений, карта, аналитика и городской мониторинг в одном интерфейсе.",
-        badge: "Доступ оператора",
+          "Review clusters, coordinate response, and keep the signal clean before backlog becomes public reality.",
+        badge: "Admin access",
         icon: <LayoutDashboard size={18} />,
         accent: "from-emerald-500 via-teal-500 to-sky-500",
         surface: "from-emerald-50 via-white to-sky-50",
         switchHref: "/login/citizen",
-        switchLabel: "Войти как житель",
+        switchLabel: "Sign in as citizen",
         highlights: [
-          "Карта обращений и контейнеров",
-          "Очередь проверки и модерации",
-          "Сводка по отклику и активности",
+          "Live issue map with cluster priorities",
+          "Report moderation and AI review queue",
+          "Community pulse and response analytics",
         ],
       }
     : {
-        eyebrow: "Личный кабинет",
-        title: "Сообщайте о проблемах быстро",
+        eyebrow: "Citizen portal",
+        title: "Report issues without losing momentum",
         subtitle:
-          "Отправляйте обращения, следите за статусом и помогайте подтверждать важные сигналы по Актау.",
-        badge: "Доступ жителя",
+          "Submit a problem, follow the response, and help verify what is really happening around Aktau.",
+        badge: "Citizen access",
         icon: <Users size={18} />,
         accent: "from-amber-400 via-emerald-400 to-teal-500",
         surface: "from-amber-50 via-white to-emerald-50",
         switchHref: "/login/admin",
-        switchLabel: "Войти как оператор",
+        switchLabel: "Sign in as admin",
         highlights: [
-          "Быстрая отправка обращения с адресом",
-          "Мои заявки и текущие статусы",
-          "Проверка городских сигналов",
+          "Fast report capture with map context",
+          "Personal activity, verification, and status tracking",
+          "Shared civic signal powered by Supabase data",
         ],
       };
 
   const fill = () => {
     const account = DEMO_ACCOUNTS[role as "citizen" | "admin"];
+    setMode("sign_in");
+    setFullName("");
+    setError(null);
+    setSuccess(null);
     setEmail(account.email);
     setPassword(account.password);
   };
@@ -74,6 +82,31 @@ export default function LoginPage() {
     event.preventDefault();
     setLoading(true);
     setError(null);
+    setSuccess(null);
+
+    if (isRegisterMode) {
+      const result = await registerCitizen({
+        fullName,
+        email,
+        password,
+      });
+      setLoading(false);
+
+      if (result.status === "error") {
+        setError(result.message);
+        return;
+      }
+
+      if (result.status === "confirm_email") {
+        setSuccess(result.message);
+        setPassword("");
+        return;
+      }
+
+      nav("/citizen/report", { replace: true });
+      return;
+    }
+
     const nextError = await signIn(email, password);
     setLoading(false);
     if (nextError) {
@@ -100,7 +133,7 @@ export default function LoginPage() {
               <CityPulseLogo size={34} />
               <div>
                 <p className="text-sm font-black uppercase tracking-[0.22em] text-slate-400">
-                  Городская платформа
+                  City platform
                 </p>
                 <p className="text-lg font-black tracking-[-0.03em] text-slate-950">
                   {APP_NAME}
@@ -142,9 +175,10 @@ export default function LoginPage() {
               <div className="rounded-[28px] border border-slate-200/80 bg-white/86 p-5 shadow-[0_24px_55px_-42px_rgba(15,23,42,0.45)]">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-bold text-slate-900">Демо-доступ</p>
+                    <p className="text-sm font-bold text-slate-900">Demo access</p>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      Используйте встроенный demo-аккаунт, чтобы сразу открыть приложение.
+                      Use the built-in demo account to inspect the full Vite app
+                      without creating a new user first.
                     </p>
                   </div>
                   <Sparkles size={18} className="mt-1 text-amber-500" />
@@ -152,7 +186,7 @@ export default function LoginPage() {
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl bg-slate-50 px-4 py-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Почта
+                      Email
                     </p>
                     <p className="mt-1 text-sm font-semibold text-slate-900">
                       {DEMO_ACCOUNTS[role as "citizen" | "admin"].email}
@@ -160,7 +194,7 @@ export default function LoginPage() {
                   </div>
                   <div className="rounded-2xl bg-slate-50 px-4 py-3">
                     <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-400">
-                      Пароль
+                      Password
                     </p>
                     <p className="mt-1 text-sm font-semibold text-slate-900">
                       {DEMO_ACCOUNTS[role as "citizen" | "admin"].password}
@@ -184,7 +218,7 @@ export default function LoginPage() {
                     : "text-slate-500 hover:text-slate-900",
                 ].join(" ")}
               >
-                Житель
+                Citizen
               </Link>
               <Link
                 to="/login/admin"
@@ -195,27 +229,45 @@ export default function LoginPage() {
                     : "text-slate-500 hover:text-slate-900",
                 ].join(" ")}
               >
-                Оператор
+                Admin
               </Link>
             </div>
 
             <div className="rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_26px_70px_-42px_rgba(15,23,42,0.35)] sm:p-8">
               <div className="mb-6">
                 <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-400">
-                  Безопасный вход
+                  Secure access
                 </p>
                 <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
-                  Вход в {APP_NAME}
+                  {isRegisterMode ? `Create your ${APP_NAME} account` : `Continue to ${APP_NAME}`}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Используйте рабочий аккаунт или подставьте demo-данные для этой роли.
+                  {isRegisterMode
+                    ? "Create a citizen account to submit reports and follow response progress."
+                    : "Use your live Supabase credentials or preload the demo account for this role."}
                 </p>
               </div>
 
               <form onSubmit={submit} className="flex flex-col gap-4">
+                {isRegisterMode ? (
+                  <div>
+                    <label className="mb-1.5 block text-[13px] font-semibold text-slate-700">
+                      Full name
+                    </label>
+                    <input
+                      type="text"
+                      value={fullName}
+                      onChange={(event) => setFullName(event.target.value)}
+                      required
+                      placeholder="Aigerim Serik"
+                      className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
+                    />
+                  </div>
+                ) : null}
+
                 <div>
                   <label className="mb-1.5 block text-[13px] font-semibold text-slate-700">
-                    Почта
+                    Email
                   </label>
                   <input
                     type="email"
@@ -226,9 +278,10 @@ export default function LoginPage() {
                     className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
                   />
                 </div>
+
                 <div>
                   <label className="mb-1.5 block text-[13px] font-semibold text-slate-700">
-                    Пароль
+                    Password
                   </label>
                   <div className="relative">
                     <input
@@ -236,7 +289,7 @@ export default function LoginPage() {
                       value={password}
                       onChange={(event) => setPassword(event.target.value)}
                       required
-                      placeholder="Введите пароль"
+                      placeholder="Enter your password"
                       className="w-full rounded-2xl border border-slate-200 px-4 py-3 pr-11 text-sm outline-none transition focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100"
                     />
                     <button
@@ -249,18 +302,30 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {error && (
+                {error ? (
                   <p className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm text-rose-700">
                     {error}
                   </p>
-                )}
+                ) : null}
+
+                {success ? (
+                  <p className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                    {success}
+                  </p>
+                ) : null}
 
                 <button
                   type="submit"
                   disabled={loading}
                   className="btn-primary mt-1 w-full rounded-2xl py-3.5 text-sm font-bold"
                 >
-                  {loading ? "Входим..." : "Войти"}
+                  {loading
+                    ? isRegisterMode
+                      ? "Creating account..."
+                      : "Signing in..."
+                    : isRegisterMode
+                      ? "Create account"
+                      : "Sign in"}
                 </button>
               </form>
 
@@ -269,7 +334,7 @@ export default function LoginPage() {
                   onClick={fill}
                   className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
                 >
-                  Подставить demo-аккаунт
+                  Use demo account
                 </button>
                 <Link
                   to={roleMeta.switchHref}
@@ -280,6 +345,24 @@ export default function LoginPage() {
                 </Link>
               </div>
 
+              {!isAdmin ? (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode((current) => current === "sign_in" ? "register" : "sign_in");
+                      setError(null);
+                      setSuccess(null);
+                    }}
+                    className="text-sm font-semibold text-emerald-700 transition hover:text-emerald-800"
+                  >
+                    {isRegisterMode
+                      ? "Already have an account? Sign in"
+                      : "Need an account? Register"}
+                  </button>
+                </div>
+              ) : null}
+
               <div className="mt-6 rounded-[24px] bg-slate-50 px-4 py-4">
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
@@ -287,10 +370,12 @@ export default function LoginPage() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-900">
-                      Рабочее пространство Актау
+                      Aktau live workspace
                     </p>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      Один интерфейс для обращений, карты, логистики и городского мониторинга.
+                      This session connects to the same Vite production app used
+                      for reports, analytics, waste operations, and community
+                      review.
                     </p>
                   </div>
                 </div>

@@ -14,6 +14,15 @@ type AuthCtx = {
   user: AuthUser | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<string | null>
+  registerCitizen: (input: {
+    fullName: string
+    email: string
+    password: string
+  }) => Promise<
+    | { status: 'signed_in' }
+    | { status: 'confirm_email'; message: string }
+    | { status: 'error'; message: string }
+  >
   signOut: () => Promise<void>
 }
 
@@ -49,9 +58,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return error?.message ?? null
   }
 
+  const registerCitizen: AuthCtx['registerCitizen'] = async ({
+    fullName,
+    email,
+    password,
+  }) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          role: 'citizen',
+          full_name: fullName.trim(),
+        },
+      },
+    })
+
+    if (error) {
+      return { status: 'error', message: error.message }
+    }
+
+    if (data.session) {
+      setUser(userFromSession(data.session))
+      return { status: 'signed_in' }
+    }
+
+    return {
+      status: 'confirm_email',
+      message: 'Account created. Confirm your email, then sign in to continue.',
+    }
+  }
+
   const signOut = async () => { await supabase.auth.signOut() }
 
-  return <AuthContext.Provider value={{ user, loading, signIn, signOut }}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={{ user, loading, signIn, registerCitizen, signOut }}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => useContext(AuthContext)

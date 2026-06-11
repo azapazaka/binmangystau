@@ -2,6 +2,22 @@
 import { supabase } from './supabase'
 import type { ClusterRecord, ReportRecord, DashboardStats } from '@/types'
 
+const SESSION_EXPIRED_MESSAGE = 'Your session expired. Sign in again and resubmit the report.'
+
+async function requireAuthenticatedUser(expectedUserId?: string) {
+  const { data, error } = await supabase.auth.getUser()
+
+  if (error || !data.user) {
+    throw new Error(SESSION_EXPIRED_MESSAGE)
+  }
+
+  if (expectedUserId && data.user.id !== expectedUserId) {
+    throw new Error(SESSION_EXPIRED_MESSAGE)
+  }
+
+  return data.user
+}
+
 // ── Clusters ──────────────────────────────────────────────────────────────
 export async function listClusters(filters?: {
   category?: string
@@ -23,6 +39,8 @@ export async function updateClusterStatus(
   clusterId: string,
   status: 'open' | 'in_progress' | 'closed'
 ) {
+  await requireAuthenticatedUser()
+
   const { error } = await supabase
     .from('clusters')
     .update({ status, updated_at: new Date().toISOString() })
@@ -70,6 +88,8 @@ export async function createReport(input: {
   address: string
   submittedBy: string
 }): Promise<void> {
+  await requireAuthenticatedUser(input.submittedBy)
+
   // Upload photo
   const ext = input.photo.name.split('.').pop()
   const path = `${Date.now()}-${crypto.randomUUID()}.${ext}`
@@ -107,6 +127,8 @@ export async function createReport(input: {
 export async function castHumanVote(
   reportId: string, userId: string, verdict: 'real' | 'fake'
 ) {
+  await requireAuthenticatedUser(userId)
+
   const { error } = await supabase.from('report_human_votes').upsert(
     { report_id: reportId, user_id: userId, verdict },
     { onConflict: 'report_id,user_id' }
