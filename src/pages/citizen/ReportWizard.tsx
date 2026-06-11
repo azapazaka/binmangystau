@@ -18,6 +18,7 @@ import { CitizenStatusBadge } from "@/components/citizen-v2/CitizenStatusBadge";
 import { CategoryBadge } from "@/components/ui/CategoryBadge";
 import { useAuth } from "@/contexts/AuthContext";
 import { createReport } from "@/lib/api";
+import { analyzeImageFile } from "@/lib/ai";
 import { CATEGORY_META } from "@/lib/constants";
 import { env } from "@/lib/env";
 import type { ReportCategory } from "@/types";
@@ -82,6 +83,8 @@ export default function ReportWizard() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const [aiDone, setAiDone] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -111,8 +114,21 @@ export default function ReportWizard() {
     if (photoPreview) URL.revokeObjectURL(photoPreview);
 
     setSubmitError(null);
+    setAiDone(false);
     setPhoto(nextPhoto);
     setPhotoPreview(URL.createObjectURL(nextPhoto));
+
+    // AI auto-fill: analyze image immediately
+    setAiAnalyzing(true);
+    analyzeImageFile(nextPhoto)
+      .then((result) => {
+        if (!result) return;
+        if (result.suggestedCategory) setCategory(result.suggestedCategory);
+        if (result.reason) setDescription(result.reason.slice(0, 280));
+        setAiDone(true);
+      })
+      .catch(() => {})
+      .finally(() => setAiAnalyzing(false));
   }
 
   function onUseCurrentLocation() {
@@ -299,7 +315,20 @@ export default function ReportWizard() {
                 {photoPreview ? (
                   <div className="overflow-hidden rounded-[26px] border border-slate-200 bg-slate-50">
                     <img src={photoPreview} alt="Предпросмотр" className="h-[420px] w-full object-cover" />
-                    <div className="flex justify-center p-5">
+                    <div className="flex items-center justify-between gap-3 px-5 pb-5 pt-4">
+                      {aiAnalyzing ? (
+                        <span className="flex items-center gap-2 text-sm font-medium text-teal-700">
+                          <Sparkles size={15} className="animate-pulse" />
+                          AI анализирует фото...
+                        </span>
+                      ) : aiDone ? (
+                        <span className="flex items-center gap-2 text-sm font-medium text-emerald-700">
+                          <CheckCircle2 size={15} />
+                          Категория и описание заполнены автоматически
+                        </span>
+                      ) : (
+                        <span />
+                      )}
                       <button
                         type="button"
                         onClick={() => fileInputRef.current?.click()}

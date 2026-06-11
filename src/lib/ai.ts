@@ -16,6 +16,84 @@ Analyze the provided image and determine:
 Respond ONLY with valid JSON. No markdown, no code fences — raw JSON only:
 {"isValidReport":true,"suggestedCategory":"road","confidence":0.92,"visualSeverity":"high","tags":["pothole","road damage"],"reason":"Large pothole visible on road surface posing a safety risk."}`
 
+const WIZARD_PROMPT = `You are an AI assistant helping citizens report city infrastructure issues.
+Analyze the image and respond with a JSON object describing what you see.
+
+Fields:
+- "category": one of "road", "light", "trash", "traffic", "other"
+- "description": a clear, concise 1-2 sentence description of the issue IN RUSSIAN suitable for a citizen report (e.g. "Глубокая яма на дорожном покрытии, представляющая опасность для транспортных средств.")
+- "visualSeverity": "low", "medium", or "high"
+- "tags": up to 4 short Russian tags (e.g. ["яма", "дорожное покрытие"])
+- "confidence": number 0-1
+- "isValidReport": boolean — true if this is a genuine city issue
+
+Raw JSON only, no markdown:
+{"category":"road","description":"...","visualSeverity":"high","tags":["яма"],"confidence":0.93,"isValidReport":true}`
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(reader.result as string)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+export async function analyzeImageFile(file: File): Promise<AiProviderResult | null> {
+  const apiKey = env.openRouterApiKey
+  if (!apiKey) return null
+
+  try {
+    const dataUrl = await fileToBase64(file)
+
+    const response = await fetch(OPENROUTER_API_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': window.location.origin,
+        'X-Title': 'CityPulse',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.5-flash-lite',
+        messages: [
+          { role: 'system', content: WIZARD_PROMPT },
+          {
+            role: 'user',
+            content: [
+              { type: 'image_url', image_url: { url: dataUrl } },
+              { type: 'text', text: 'Опиши проблему на фото.' },
+            ],
+          },
+        ],
+        temperature: 0,
+        max_tokens: 400,
+      }),
+    })
+
+    if (!response.ok) return null
+
+    const data = await response.json()
+    const content: string | undefined = data.choices?.[0]?.message?.content
+    if (!content) return null
+
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) return null
+
+    const parsed = JSON.parse(jsonMatch[0])
+    return {
+      isValidReport: Boolean(parsed.isValidReport ?? true),
+      suggestedCategory: (parsed.category ?? 'other') as ReportCategory,
+      confidence: Math.min(1, Math.max(0, Number(parsed.confidence) || 0)),
+      tags: Array.isArray(parsed.tags) ? (parsed.tags as string[]).slice(0, 4) : [],
+      reason: String(parsed.description ?? ''),
+      visualSeverity: (parsed.visualSeverity ?? 'low') as AiVisualSeverity,
+    }
+  } catch {
+    return null
+  }
+}
+
 export async function analyzeReportImage(
   photoUrl: string,
   userCategory: ReportCategory,

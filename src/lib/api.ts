@@ -136,6 +136,34 @@ export async function createReport(input: {
   if (error) throw error
 }
 
+export async function reviewReport(
+  reportId: string,
+  input: {
+    verdict: 'confirmed' | 'corrected' | 'invalidated'
+    correctedCategory?: string | null
+    correctedVisualSeverity?: string | null
+    note?: string
+    reviewedBy: string
+  }
+): Promise<void> {
+  await requireAuthenticatedUser(input.reviewedBy)
+
+  const { error } = await supabase
+    .from('reports')
+    .update({
+      review_status: input.verdict,
+      ai_correct: input.verdict === 'confirmed',
+      expert_category: input.correctedCategory ?? null,
+      expert_visual_severity: input.correctedVisualSeverity ?? null,
+      review_note: input.note ?? null,
+      reviewed_by: input.reviewedBy,
+      reviewed_at: new Date().toISOString(),
+      ai_needs_review: false,
+    })
+    .eq('id', reportId)
+  if (error) throw error
+}
+
 export async function castHumanVote(
   reportId: string, userId: string, verdict: 'real' | 'fake'
 ) {
