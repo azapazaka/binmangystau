@@ -94,107 +94,18 @@ body {
 }
 
 .citizen-v2-frame {
-  display: flex;
   min-height: 100vh;
-  background: #ffffff;
+  background:
+    radial-gradient(circle at top center, rgba(221, 255, 242, 0.75), rgba(221, 255, 242, 0) 28%),
+    linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
 }
 
-.citizen-v2-sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  padding: 24px 18px;
-  border-right: 1px solid #e2e8f0;
-  background: #ffffff;
-}
-
-.citizen-v2-brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.citizen-v2-brand-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  color: #0f766e;
-  background: linear-gradient(135deg, #d1fae5 0%, #ecfeff 100%);
-  box-shadow: inset 0 0 0 1px rgba(13, 148, 136, 0.12);
-}
-
-.citizen-v2-brand-title {
-  margin: 0;
-  font-size: 1.35rem;
-  font-weight: 800;
-  letter-spacing: 0;
-  color: #0f172a;
-}
-
-.citizen-v2-brand-city {
-  margin: 2px 0 0;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: #64748b;
-}
-
-.citizen-v2-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin-top: 28px;
-}
-
-.citizen-v2-nav-link {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  color: #334155;
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.citizen-v2-nav-link:hover {
-  background: rgba(240, 249, 255, 0.85);
-  color: #0f172a;
-}
-
-.citizen-v2-nav-link.is-active {
-  color: #0f766e;
-  background: linear-gradient(135deg, rgba(220, 252, 231, 0.95) 0%, rgba(240, 253, 250, 0.95) 100%);
-  box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.14);
-}
-
-.citizen-v2-sidebar-card {
-  margin-top: 24px;
-  padding: 14px;
-  border-radius: 16px;
-  background: linear-gradient(180deg, rgba(252, 248, 241, 0.95) 0%, rgba(244, 250, 247, 0.95) 100%);
-  border: 1px solid rgba(226, 232, 240, 0.85);
-}
-
-.citizen-v2-sidebar-card-title,
 .citizen-v2-panel h2,
 .citizen-v2-page-header h1 {
   margin: 0;
   color: #0f172a;
 }
 
-.citizen-v2-sidebar-card-title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.citizen-v2-sidebar-card-body,
 .citizen-v2-body-copy {
   margin: 6px 0 0;
   font-size: 0.8rem;
@@ -205,16 +116,17 @@ body {
 .citizen-v2-main {
   display: flex;
   min-width: 0;
-  flex: 1;
   flex-direction: column;
+  width: min(100%, 1180px);
+  margin: 0 auto;
+  padding-bottom: 116px;
 }
 
 .citizen-v2-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 16px 24px 8px;
 }
 
 .citizen-v2-topbar-spacer {
@@ -224,7 +136,7 @@ body {
 .citizen-v2-topbar-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 10px;
   justify-content: flex-end;
 }
 
@@ -266,10 +178,16 @@ body {
 .citizen-v2-profile-button {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   padding: 9px 12px;
   border-radius: 18px;
   color: #0f172a;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.citizen-v2-profile-button:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 0 0 1px rgba(226, 232, 240, 0.95), 0 10px 30px -20px rgba(15, 23, 42, 0.38);
 }
 
 .citizen-v2-avatar {
@@ -316,8 +234,98 @@ body {
 
 .citizen-v2-content {
   flex: 1;
-  padding: 16px 24px 28px;
+  padding: 8px 24px 32px;
   overflow: auto;
+}
+
+.citizen-v2-bottom-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  z-index: 40;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  width: min(760px, calc(100vw - 32px));
+  padding: 10px;
+  border-radius: 28px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 28px 70px -38px rgba(15, 23, 42, 0.48);
+  backdrop-filter: blur(18px);
+  transform: translateX(-50%);
+}
+
+.citizen-v2-bottom-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 68px;
+  padding: 10px 12px;
+  border-radius: 22px;
+  color: #64748b;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  transition:
+    transform 0.22s ease,
+    background-color 0.22s ease,
+    color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.citizen-v2-bottom-link:hover {
+  transform: translateY(-2px);
+  color: #0f172a;
+}
+
+.citizen-v2-bottom-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 14px;
+  transition:
+    transform 0.22s ease,
+    background-color 0.22s ease,
+    color 0.22s ease;
+}
+
+.citizen-v2-bottom-link-label {
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.citizen-v2-bottom-link.is-active {
+  color: #0f766e;
+  background: linear-gradient(135deg, rgba(220, 252, 231, 0.98) 0%, rgba(240, 253, 250, 0.98) 100%);
+  box-shadow: inset 0 0 0 1px rgba(45, 212, 191, 0.12), 0 18px 35px -28px rgba(15, 118, 110, 0.9);
+  transform: translateY(-6px);
+}
+
+.citizen-v2-bottom-link.is-active .citizen-v2-bottom-link-icon {
+  color: #0f766e;
+  background: rgba(255, 255, 255, 0.92);
+  transform: scale(1.06);
+}
+
+.citizen-v2-step-card {
+  animation: citizen-step-enter 0.28s ease;
+}
+
+@keyframes citizen-step-enter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .citizen-v2-page-header {
@@ -442,16 +450,6 @@ body {
 }
 
 @media (max-width: 1180px) {
-  .citizen-v2-frame {
-    flex-direction: column;
-  }
-
-  .citizen-v2-sidebar {
-    width: auto;
-    border-right: 0;
-    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-  }
-
   .citizen-v2-overview-grid {
     grid-template-columns: 1fr;
   }
@@ -462,11 +460,28 @@ body {
     min-height: 100vh;
   }
 
-  .citizen-v2-sidebar,
   .citizen-v2-topbar,
   .citizen-v2-content {
     padding-left: 16px;
     padding-right: 16px;
+  }
+
+  .citizen-v2-main {
+    padding-bottom: 108px;
+  }
+
+  .citizen-v2-bottom-bar {
+    bottom: 10px;
+    width: calc(100vw - 16px);
+    gap: 6px;
+    padding: 8px;
+    border-radius: 24px;
+  }
+
+  .citizen-v2-bottom-link {
+    min-height: 62px;
+    padding: 9px 8px;
+    font-size: 0.72rem;
   }
 
   .citizen-v2-page-header h1 {

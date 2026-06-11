@@ -18,7 +18,6 @@ export function CitizenShell({
   return (
     <div className="citizen-v2-scene">
       <div className="citizen-v2-frame">
-        <CitizenSidebar />
         <div className="citizen-v2-main">
           <CitizenTopbar action={topbarAction} />
           <div className="citizen-v2-content">
@@ -26,6 +25,7 @@ export function CitizenShell({
             {children}
           </div>
         </div>
+        <CitizenSidebar />
       </div>
     </div>
   );
