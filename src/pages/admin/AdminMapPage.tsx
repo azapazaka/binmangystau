@@ -12,6 +12,7 @@ import {
   X,
   XCircle,
 } from "lucide-react";
+import { createPortal } from "react-dom";
 import { useEffect, useMemo, useState } from "react";
 
 import { CityMap } from "@/components/maps/CityMap";
@@ -95,7 +96,7 @@ function ReportModal({
     }
   }
 
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
       onClick={onClose}
@@ -353,7 +354,8 @@ function ReportModal({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
