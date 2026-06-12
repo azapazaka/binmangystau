@@ -8,7 +8,7 @@ import type {
   SmartBinSerialFormat,
   SmartBinSectionKey,
   SmartBinStatus,
-} from "../types";
+} from "../types/index.js";
 
 export const SMART_BIN_HEIGHT_CM = 15;
 export const SMART_BIN_SECTION_KEYS = ["plastic", "organic"] as const;

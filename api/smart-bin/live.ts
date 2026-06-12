@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 
-import { readSmartBinLiveState, sendJson } from "../_lib/smart-bin-server.ts";
+import { readSmartBinLiveState, sendJson } from "../_lib/smart-bin-server.js";
 
 export default async function handler(
   request: IncomingMessage,

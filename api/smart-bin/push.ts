@@ -6,7 +6,7 @@ import {
   readRequestJson,
   sendJson,
   upsertSmartBinLiveState,
-} from "../_lib/smart-bin-server.ts";
+} from "../_lib/smart-bin-server.js";
 
 type PushRequest = IncomingMessage & { body?: unknown };
 

@@ -1,4 +1,4 @@
-import type { SmartBinBridgeResponse } from "../types";
+import type { SmartBinBridgeResponse } from "../types/index.js";
 
 export type SmartBinPushResult = {
   attempted: boolean;

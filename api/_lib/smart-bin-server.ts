@@ -5,8 +5,8 @@ import { createClient } from "@supabase/supabase-js";
 import {
   createOfflineSmartBinBridgeResponse,
   normalizeSmartBinBridgeResponse,
-} from "../../src/lib/smartBinBridge.ts";
-import type { SmartBinBridgeResponse } from "../../src/types/index.ts";
+} from "../../src/lib/smartBinBridge.js";
+import type { SmartBinBridgeResponse } from "../../src/types/index.js";
 
 const SMART_BIN_LIVE_STATE_ID = "smart-bin-live";
 

@@ -10,8 +10,8 @@ import {
   parseSmartBinSensorLogBlock,
   type SmartBinSerialFormat,
 } from "../src/lib/smartBinBridge.ts";
-import { pushSmartBinCloudState } from "../src/lib/smartBinCloud.ts";
-import type { SmartBinBridgeResponse } from "../src/types/index.ts";
+import { pushSmartBinCloudState } from "../src/lib/smartBinCloud.js";
+import type { SmartBinBridgeResponse } from "../src/types/index.js";
 
 const BRIDGE_PORT = Number(process.env.BRIDGE_PORT ?? 8787);
 const BAUD_RATE = Number(process.env.ESP32_BAUD_RATE ?? 115200);

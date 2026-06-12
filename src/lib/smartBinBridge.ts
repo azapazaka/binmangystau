@@ -1,13 +1,13 @@
 import type {
   SmartBinBridgeResponse,
   SmartBinBridgeSections,
-} from "../types";
+} from "../types/index.js";
 import {
   createBridgeSectionFromDistance,
   createEmptyBridgeResponse,
   createOfflineBridgeSection,
   isSmartBinBridgeResponse,
-} from "./smartBin";
+} from "./smartBin.js";
 
 export type SmartBinSerialPayload = {
   plasticDistanceCm: number | null;
@@ -175,4 +175,4 @@ export function normalizeSmartBinBridgeResponse(
   };
 }
 
-export type { SmartBinSerialFormat } from "../types";
+export type { SmartBinSerialFormat } from "../types/index.js";
