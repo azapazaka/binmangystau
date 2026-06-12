@@ -2,7 +2,7 @@ export type ReportCategory = "road" | "light" | "trash" | "traffic" | "other";
 export type AccountRole = "citizen" | "admin";
 export type LocationSource = "manual" | "geolocation" | "map";
 export type CityPulseMode = "live" | "simulation";
-export type SmartBinWasteType = "plastic" | "metal" | "mixed";
+export type SmartBinWasteType = "plastic" | "metal" | "mixed" | "organic";
 export type SmartBinStatus =
   | "normal"
   | "warning"
@@ -11,7 +11,10 @@ export type SmartBinStatus =
   | "sos"
   | "offline";
 export type SmartBinSource = "device" | "simulation";
+export type SmartBinRuntimeSource = "legacy" | "bridge" | "cloud";
+export type SmartBinSerialFormat = "json" | "sensor_log";
 export type CityPulseDemoAction = "fill_up" | "fire" | "sos" | "reset";
+export type SmartBinSectionKey = "plastic" | "organic";
 
 export type ClusterStatus = "open" | "in_progress" | "closed";
 
@@ -248,6 +251,53 @@ export type SmartBinRecord = {
   status: SmartBinStatus;
   lastSeen: string;
   source: SmartBinSource;
+};
+
+export type SmartBinBridgeSectionPayload = {
+  distanceCm: number | null;
+  fillLevel: number | null;
+  status: SmartBinStatus;
+  isOffline: boolean;
+  lastReadAt: string | null;
+};
+
+export type SmartBinBridgeSections = Record<
+  SmartBinSectionKey,
+  SmartBinBridgeSectionPayload
+>;
+
+export type SmartBinBridgeResponse = {
+  ok: boolean;
+  readAt: string | null;
+  sections: SmartBinBridgeSections;
+  error?: string | null;
+  lastParsedFormat?: SmartBinSerialFormat | null;
+};
+
+export type SmartBinPosition = {
+  lat: number;
+  lng: number;
+  source: "browser" | "stored" | "default";
+};
+
+export type SmartBinLiveSection = {
+  wasteType: SmartBinSectionKey;
+  distanceCm: number | null;
+  fillLevel: number | null;
+  status: SmartBinStatus;
+  isOffline: boolean;
+  lastReadAt: string | null;
+};
+
+export type SmartBinLiveRecord = {
+  id: string;
+  label: string;
+  lat: number;
+  lng: number;
+  locationSource: SmartBinPosition["source"];
+  locationLabel: string;
+  sections: Record<SmartBinSectionKey, SmartBinLiveSection>;
+  lastUpdatedAt: string | null;
 };
 
 export type SmartBinPriority = {

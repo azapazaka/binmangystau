@@ -13,6 +13,7 @@ type CityMapProps = {
   height?: string;
   className?: string;
   navigationPosition?: "top-right" | "bottom-right";
+  center?: { lat: number; lng: number } | null;
 };
 
 export function CityMap({
@@ -21,6 +22,7 @@ export function CityMap({
   onSelect,
   height = "100%",
   className,
+  center,
 }: CityMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<ReturnType<LeafletModule["map"]> | null>(null);
@@ -48,7 +50,7 @@ export function CityMap({
         const Lib = leafletRef.current;
 
         const map = Lib.map(containerRef.current, {
-          center: [env.defaultLat, env.defaultLng],
+          center: [center?.lat ?? env.defaultLat, center?.lng ?? env.defaultLng],
           zoom: 12,
           zoomControl: true,
         });
@@ -77,6 +79,15 @@ export function CityMap({
       }
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !center) return;
+
+    map.setView([center.lat, center.lng], map.getZoom(), {
+      animate: true,
+    });
+  }, [center, ready]);
 
   // Sync markers
   useEffect(() => {

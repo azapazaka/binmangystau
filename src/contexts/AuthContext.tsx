@@ -1,5 +1,7 @@
 // src/contexts/AuthContext.tsx
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { DEMO_ACCOUNTS } from '@/lib/constants'
+import { isSupabaseConfigured } from '@/lib/env'
 import { supabase } from '@/lib/supabase'
 import type { Session, User } from '@supabase/supabase-js'
 
@@ -27,6 +29,7 @@ type AuthCtx = {
 }
 
 const AuthContext = createContext<AuthCtx>(null!)
+const LOCAL_DEMO_AUTH_KEY = 'citypulse:local-demo-auth'
 
 function userFromSession(session: Session): AuthUser {
   const u: User = session.user
@@ -54,11 +57,72 @@ function authErrorMessage(error: { message?: string } | null | undefined): strin
   return message
 }
 
+function localDemoUserForCredentials(email: string, password: string): AuthUser | null {
+  if (email === DEMO_ACCOUNTS.admin.email && password === DEMO_ACCOUNTS.admin.password) {
+    return {
+      id: 'local-demo-admin',
+      email,
+      role: 'admin',
+      fullName: 'Demo Admin',
+    }
+  }
+
+  if (email === DEMO_ACCOUNTS.citizen.email && password === DEMO_ACCOUNTS.citizen.password) {
+    return {
+      id: 'local-demo-citizen',
+      email,
+      role: 'citizen',
+      fullName: 'Demo Citizen',
+    }
+  }
+
+  return null
+}
+
+function readLocalDemoUser(): AuthUser | null {
+  if (typeof window === 'undefined') return null
+
+  try {
+    const raw = window.localStorage.getItem(LOCAL_DEMO_AUTH_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as Partial<AuthUser>
+    if (
+      typeof parsed.id === 'string' &&
+      typeof parsed.email === 'string' &&
+      (parsed.role === 'citizen' || parsed.role === 'admin') &&
+      typeof parsed.fullName === 'string'
+    ) {
+      return parsed as AuthUser
+    }
+  } catch {
+    return null
+  }
+
+  return null
+}
+
+function writeLocalDemoUser(user: AuthUser | null) {
+  if (typeof window === 'undefined') return
+
+  if (!user) {
+    window.localStorage.removeItem(LOCAL_DEMO_AUTH_KEY)
+    return
+  }
+
+  window.localStorage.setItem(LOCAL_DEMO_AUTH_KEY, JSON.stringify(user))
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setUser(readLocalDemoUser())
+      setLoading(false)
+      return
+    }
+
     supabase.auth.getSession().then(({ data }) => {
       setUser(data.session ? userFromSession(data.session) : null)
       setLoading(false)
@@ -70,6 +134,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string) => {
+    if (!isSupabaseConfigured()) {
+      const demoUser = localDemoUserForCredentials(email.trim(), password)
+      if (!demoUser) {
+        return 'Supabase не настроен локально. Используйте встроенный demo-аккаунт или добавьте VITE_SUPABASE_URL и VITE_SUPABASE_ANON_KEY.'
+      }
+
+      setUser(demoUser)
+      writeLocalDemoUser(demoUser)
+      return null
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     return authErrorMessage(error)
   }
@@ -79,6 +154,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email,
     password,
   }) => {
+    if (!isSupabaseConfigured()) {
+      return {
+        status: 'error',
+        message: 'Локальная регистрация недоступна без Supabase. Используйте demo-аккаунт или подключите реальные VITE_SUPABASE_* переменные.',
+      }
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -123,7 +205,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const signOut = async () => { await supabase.auth.signOut() }
+  const signOut = async () => {
+    if (!isSupabaseConfigured()) {
+      setUser(null)
+      writeLocalDemoUser(null)
+      return
+    }
+
+    await supabase.auth.signOut()
+  }
 
   return <AuthContext.Provider value={{ user, loading, signIn, registerCitizen, signOut }}>{children}</AuthContext.Provider>
 }

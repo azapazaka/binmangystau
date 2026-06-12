@@ -6,12 +6,14 @@ import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 
 const {
   getSessionMock,
+  isSupabaseConfiguredMock,
   onAuthStateChangeMock,
   signUpMock,
   signInWithPasswordMock,
   signOutMock,
 } = vi.hoisted(() => ({
   getSessionMock: vi.fn(),
+  isSupabaseConfiguredMock: vi.fn(),
   onAuthStateChangeMock: vi.fn(),
   signUpMock: vi.fn(),
   signInWithPasswordMock: vi.fn(),
@@ -28,6 +30,10 @@ vi.mock("@/lib/supabase", () => ({
       signOut: signOutMock,
     },
   },
+}));
+
+vi.mock("@/lib/env", () => ({
+  isSupabaseConfigured: isSupabaseConfiguredMock,
 }));
 
 function Harness() {
@@ -63,7 +69,9 @@ describe("AuthContext registration", () => {
     signUpMock.mockReset();
     signInWithPasswordMock.mockReset();
     signOutMock.mockReset();
+    isSupabaseConfiguredMock.mockReset();
 
+    isSupabaseConfiguredMock.mockReturnValue(true);
     getSessionMock.mockResolvedValue({ data: { session: null } });
     onAuthStateChangeMock.mockReturnValue({
       data: {
@@ -185,5 +193,43 @@ describe("AuthContext registration", () => {
       expect(screen.getByTestId("result")).toHaveTextContent('"status":"error"'),
     );
     expect(screen.getByTestId("result")).toHaveTextContent("Пользователь с таким email уже зарегистрирован.");
+  });
+
+  it("allows local demo sign in when supabase is not configured", async () => {
+    isSupabaseConfiguredMock.mockReturnValue(false);
+
+    function LocalHarness() {
+      const auth = useAuth();
+      const [result, setResult] = React.useState("");
+
+      return (
+        <div>
+          <button
+            type="button"
+            onClick={async () => {
+              const value = await auth.signIn("demo@citypulse.local", "citypulse-demo");
+              setResult(value ?? "ok");
+            }}
+          >
+            Local demo sign in
+          </button>
+          <div data-testid="result">{result}</div>
+          <div data-testid="user">{auth.user?.email ?? "anonymous"}</div>
+        </div>
+      );
+    }
+
+    render(
+      <AuthProvider>
+        <LocalHarness />
+      </AuthProvider>,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Local demo sign in" }));
+
+    await waitFor(() =>
+      expect(screen.getByTestId("result")).toHaveTextContent("ok"),
+    );
+    expect(screen.getByTestId("user")).toHaveTextContent("demo@citypulse.local");
   });
 });
